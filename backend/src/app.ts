@@ -49,7 +49,12 @@ app.use(
           'https://fonts.googleapis.com',
         ],
         imgSrc: ["'self'", 'data:', 'blob:'],
-        connectSrc: ["'self'", 'http://localhost:3000'],
+        connectSrc: [
+          "'self'",
+          // Allow connections to both local and production servers
+          'http://localhost:3000',
+          'https://finance-dashboard-api-hqjk.onrender.com',
+        ],
       },
     },
     // Cross-Origin-Embedder-Policy can break CDN fonts/scripts
