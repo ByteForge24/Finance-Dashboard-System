@@ -1,5 +1,9 @@
 // API Client - handles all backend communication
-const BASE_URL = 'http://127.0.0.1:3000/api/v1';
+// Use environment variable if available, otherwise default to localhost
+const API_BASE = (typeof window !== 'undefined' && window.ENV?.API_BASE_URL) 
+  ? window.ENV.API_BASE_URL 
+  : 'http://127.0.0.1:3000';
+const BASE_URL = `${API_BASE}/api/v1`;
 
 function getToken() { return localStorage.getItem('token'); }
 function setToken(t) { localStorage.setItem('token', t); }
