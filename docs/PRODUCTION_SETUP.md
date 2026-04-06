@@ -34,17 +34,64 @@ INSERT INTO "User" (...) VALUES
 4. Copy-paste the entire SQL into the editor
 5. Click **Run** (or press Ctrl+Enter)
 
-### Step 3: Verify Seeding Succeeded
+### Step 3: Verify Seeding Succeeded (Automated Check)
+
+**Recommended:** Use the automated verification script to confirm seed data is correct:
+
+```bash
+# From backend directory
+npm run verify:seed
+```
+
+This script will:
+- ✅ Check all 4 demo users exist
+- ✅ Verify roles are correct (ADMIN, ANALYST, VIEWER, VIEWER)
+- ✅ Verify statuses are correct (3 ACTIVE, 1 INACTIVE)
+- ✅ Validate password hashes using bcrypt comparison
+- 🚨 Fail loudly if anything is mismatched
+
+**Example successful output:**
+```
+================================================================================
+🔐 Production Seed Verification
+================================================================================
+
+Verification Results:
+
+Email                                  | Exists | Role  | Status | Password | Status
+----------------------------------------|--------|-------|--------|----------|--------
+admin@finance-dashboard.local          | ✅     | ✅    | ✅     | ✅       | OK
+analyst@finance-dashboard.local        | ✅     | ✅    | ✅     | ✅       | OK
+viewer@finance-dashboard.local         | ✅     | ✅    | ✅     | ✅       | OK
+inactive@finance-dashboard.local       | ✅     | ✅    | ✅     | ✅       | OK
+
+================================================================================
+✅ Production seed verification: PASSED (4/4 users verified)
+================================================================================
+```
+
+**If verification fails:**
+- Review the error message for which user/field is wrong
+- Re-run the seed SQL from Supabase (may need to delete old data first)
+- Run verification again to confirm
+
+---
+
+### Step 4: Manual Verification (Optional)
+
+If you prefer manual verification or don't have Node.js access:
 
 1. Go to **Supabase Dashboard** → **Data Editor**
 2. Click **Users** table
 3. Verify you see 4 demo users:
-   - `admin@finance-dashboard.local` (ACTIVE)
-   - `analyst@finance-dashboard.local` (ACTIVE)
-   - `viewer@finance-dashboard.local` (ACTIVE)
-   - `inactive@finance-dashboard.local` (INACTIVE)
+   - `admin@finance-dashboard.local` (ACTIVE, ADMIN)
+   - `analyst@finance-dashboard.local` (ACTIVE, ANALYST)
+   - `viewer@finance-dashboard.local` (ACTIVE, VIEWER)
+   - `inactive@finance-dashboard.local` (INACTIVE, VIEWER)
 
-### Step 4: Test Login
+---
+
+### Step 5: Test Login
 
 **Frontend URL**: `https://finance-dashboard-pro.netlify.app`
 
@@ -105,7 +152,65 @@ Check the debug logs on Render:
 
 ---
 
-## Automation Improvement (Future)
+## Verifying Seed Data (CI/CD & Manual)
+
+To prevent seed data from silently mismatching during deployment, use the verification script:
+
+### Running Verification
+
+**For Development (uses local `.env`)**:
+```bash
+npm run verify:seed
+```
+
+**For Production (uses production DATABASE_URL)**:
+```bash
+# From backend directory, with production DATABASE_URL set
+npm run verify:seed:prod
+```
+
+**Or with explicit database override**:
+```bash
+DATABASE_URL="postgresql://user:pass@host:port/db" npm run verify:seed
+```
+
+### What It Checks
+
+The script verifies:
+1. ✅ All 4 demo users exist (`admin`, `analyst`, `viewer`, `inactive`)
+2. ✅ Role assignments are correct
+3. ✅ Account status is correct (3 ACTIVE, 1 INACTIVE)
+4. ✅ Password hashes validate against known passwords using bcrypt
+
+### Safety Mechanisms
+
+- **Auto-warns** if DATABASE_URL points to production Supabase
+- **Never exposes** plaintext passwords in output
+- **Fails loudly** with exit code 1 if any check fails
+- **Provides actionable** next steps if verification fails
+- **Safe for CI/CD** integration (exit codes work with build systems)
+
+### CI/CD Integration Example
+
+In your deployment process, add:
+
+```bash
+# After database migration/seed
+npm run verify:seed:prod
+```
+
+If this fails, deployment stops (exit code 1) before serving broken API.
+
+### What to Do If Verification Fails
+
+1. **Check the error message** - tells you exactly which field is wrong
+2. **If seed data is missing**: Re-run the SQL from Supabase SQL Editor
+3. **If hashes are wrong**: Delete existing users and re-run SQL
+4. **Re-run verification** to confirm fix
+
+---
+
+## Database Connection Details
 
 To make this automatic on Render deployment:
 

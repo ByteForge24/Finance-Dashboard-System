@@ -18,7 +18,9 @@
     "test:integration": "jest --runInBand --testPathPattern=integration",
     "test:watch": "jest --watch",
     "test:cov": "jest --runInBand --coverage",
-    "smoke": "tsx scripts/smoke-test.ts"
+    "smoke": "tsx scripts/smoke-test.ts",
+    "verify:seed": "tsx scripts/verify-production-seed.ts",
+    "verify:seed:prod": "NODE_ENV=production tsx scripts/verify-production-seed.ts"
   },
   "keywords": [],
   "author": "",
