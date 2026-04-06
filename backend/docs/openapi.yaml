@@ -1,0 +1,1405 @@
+openapi: 3.0.0
+info:
+  title: Finance Dashboard System API
+  description: Backend API for the Finance Dashboard System
+  version: 1.0.0
+  contact:
+    name: Finance Dashboard Team
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+  - url: https://api.finance-dashboard.example.com/api/v1
+    description: Production server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [VIEWER, ANALYST, ADMIN]
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    FinancialRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        type:
+          type: string
+          enum: [income, expense]
+        category:
+          type: string
+        date:
+          type: string
+          format: date
+        notes:
+          type: string
+          nullable: true
+        createdBy:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              issue:
+                type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token for authentication
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalIncome:
+          type: number
+          format: double
+        totalExpense:
+          type: number
+          format: double
+        netBalance:
+          type: number
+          format: double
+        period:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+              nullable: true
+            endDate:
+              type: string
+              format: date
+              nullable: true
+
+    CategoryBreakdownItem:
+      type: object
+      properties:
+        category:
+          type: string
+        type:
+          type: string
+          enum: [income, expense]
+        total:
+          type: number
+          format: double
+        count:
+          type: integer
+
+    CategoryBreakdownResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryBreakdownItem'
+        period:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+              nullable: true
+            endDate:
+              type: string
+              format: date
+              nullable: true
+
+    RecentActivityItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        type:
+          type: string
+          enum: [income, expense]
+        category:
+          type: string
+        date:
+          type: string
+          format: date
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    RecentActivityResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecentActivityItem'
+
+    TrendItem:
+      type: object
+      properties:
+        period:
+          type: string
+        income:
+          type: number
+          format: double
+        expense:
+          type: number
+          format: double
+        net:
+          type: number
+          format: double
+
+    TrendsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrendItem'
+        groupBy:
+          type: string
+          enum: [month, week]
+        period:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+              nullable: true
+            endDate:
+              type: string
+              format: date
+              nullable: true
+
+    MonthlyInsightsSummary:
+      type: object
+      properties:
+        totalIncome:
+          type: number
+          format: double
+          description: Total income for the month
+        totalExpense:
+          type: number
+          format: double
+          description: Total expenses for the month
+        netBalance:
+          type: number
+          format: double
+          description: Net balance (income - expenses)
+        transactionCount:
+          type: integer
+          description: Number of transactions in the month
+
+    MonthlyInsightHighlight:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [trend, increase, decrease, anomaly, milestone]
+          description: Type of insight highlight
+        message:
+          type: string
+          description: Human-readable message describing the highlight
+        category:
+          type: string
+          nullable: true
+          description: Optional category name if applicable
+        value:
+          type: number
+          format: double
+          nullable: true
+          description: Optional numeric value associated with the highlight
+        previousValue:
+          type: number
+          format: double
+          nullable: true
+          description: Optional previous value for comparison
+
+    MonthlyInsightCategory:
+      type: object
+      properties:
+        category:
+          type: string
+          description: Category name
+        amount:
+          type: number
+          format: double
+          description: Total amount in this category
+        percentOfTotal:
+          type: number
+          format: double
+          description: Percentage of total (0-100)
+        transactionCount:
+          type: integer
+          description: Number of transactions in this category
+
+    MonthlyInsightsResponse:
+      type: object
+      properties:
+        month:
+          type: string
+          pattern: '^\d{4}-\d{2}$'
+          description: Month in YYYY-MM format
+        summary:
+          $ref: '#/components/schemas/MonthlyInsightsSummary'
+        narrative:
+          type: string
+          description: Natural language summary of the month's financial activity
+        source:
+          type: string
+          enum: [generated, ai]
+          description: Source of the narrative (generated=deterministic, ai=AI-enhanced)
+        highlights:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyInsightHighlight'
+          description: Array of key insights and highlights
+        topExpenseCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyInsightCategory'
+          description: Top 3 expense categories by amount
+        topIncomeCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyInsightCategory'
+          description: Top 3 income categories by amount
+
+    MonthlyInsightsSummary:
+      type: object
+      properties:
+        totalIncome:
+          type: number
+          format: double
+          description: Total income for the month
+        totalExpense:
+          type: number
+          format: double
+          description: Total expenses for the month
+        netBalance:
+          type: number
+          format: double
+          description: Net balance (income - expenses)
+        transactionCount:
+          type: integer
+          description: Number of transactions in the month
+
+    MonthlyInsightHighlight:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [trend, increase, decrease, anomaly, milestone]
+          description: Type of insight highlight
+        message:
+          type: string
+          description: Human-readable message describing the highlight
+        category:
+          type: string
+          nullable: true
+          description: Optional category name if applicable
+        value:
+          type: number
+          format: double
+          nullable: true
+          description: Optional numeric value associated with the highlight
+        previousValue:
+          type: number
+          format: double
+          nullable: true
+          description: Optional previous value for comparison
+
+    MonthlyInsightCategory:
+      type: object
+      properties:
+        category:
+          type: string
+          description: Category name
+        amount:
+          type: number
+          format: double
+          description: Total amount in this category
+        percentOfTotal:
+          type: number
+          format: double
+          description: Percentage of total (0-100)
+        transactionCount:
+          type: integer
+          description: Number of transactions in this category
+
+    MonthlyInsightsResponse:
+      type: object
+      properties:
+        month:
+          type: string
+          pattern: '^\d{4}-\d{2}$'
+          description: Month in YYYY-MM format
+        summary:
+          $ref: '#/components/schemas/MonthlyInsightsSummary'
+        narrative:
+          type: string
+          description: Natural language summary of the month's financial activity
+        source:
+          type: string
+          enum: [generated, ai]
+          description: Source of the narrative (generated=deterministic, ai=AI-enhanced)
+        highlights:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyInsightHighlight'
+          description: Array of key insights and highlights
+        topExpenseCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyInsightCategory'
+          description: Top 3 expense categories by amount
+        topIncomeCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyInsightCategory'
+          description: Top 3 income categories by amount
+
+    ListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+        count:
+          type: integer
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login with email and password
+      description: Authenticate a user and receive a JWT token. Inactive users cannot login.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+            example:
+              email: admin@finance-dashboard.local
+              password: AdminPassword123
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  token:
+                    type: string
+              example:
+                user:
+                  id: 550e8400-e29b-41d4-a716-446655440000
+                  name: Admin User
+                  email: admin@finance-dashboard.local
+                  role: ADMIN
+                  status: ACTIVE
+                  createdAt: 2026-01-01T00:00:00Z
+                  updatedAt: 2026-04-05T10:30:00Z
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              example:
+                error: ValidationError
+                message: Request validation failed
+                details:
+                  - field: email
+                    issue: must be a valid email
+        401:
+          description: Invalid credentials or inactive user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: UnauthorizedError
+                message: Invalid email or password
+
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get current authenticated user
+      description: Returns the authenticated user's profile information
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id: 550e8400-e29b-41d4-a716-446655440000
+                name: Admin User
+                email: admin@finance-dashboard.local
+                role: ADMIN
+                status: ACTIVE
+                createdAt: 2026-01-01T00:00:00Z
+                updatedAt: 2026-04-05T10:30:00Z
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: UnauthorizedError
+                message: Authentication required
+
+  /users:
+    post:
+      tags:
+        - User Management
+      summary: Create a new user
+      description: Create a new user account. Admin only.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [VIEWER, ANALYST, ADMIN]
+                status:
+                  type: string
+                  enum: [ACTIVE, INACTIVE]
+              required:
+                - name
+                - email
+                - password
+                - role
+                - status
+            example:
+              name: New User
+              email: newuser@finance-dashboard.local
+              password: SecurePassword123
+              role: ANALYST
+              status: ACTIVE
+      responses:
+        201:
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - User Management
+      summary: List all users
+      description: Retrieve all users. Admin only.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  count:
+                    type: integer
+              example:
+                data:
+                  - id: 550e8400-e29b-41d4-a716-446655440000
+                    name: Admin User
+                    email: admin@finance-dashboard.local
+                    role: ADMIN
+                    status: ACTIVE
+                count: 1
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}:
+    get:
+      tags:
+        - User Management
+      summary: Get a specific user
+      description: Retrieve a single user by ID. Admin only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: User information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      tags:
+        - User Management
+      summary: Update user information
+      description: Update user name and email. Admin only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+            example:
+              name: Updated Name
+      responses:
+        200:
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}/status:
+    patch:
+      tags:
+        - User Management
+      summary: Change user status
+      description: Activate or deactivate a user. Admin only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [ACTIVE, INACTIVE]
+              required:
+                - status
+            example:
+              status: ACTIVE
+      responses:
+        200:
+          description: User status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}/role:
+    patch:
+      tags:
+        - User Management
+      summary: Change user role
+      description: Assign a new role to a user. Admin only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum: [VIEWER, ANALYST, ADMIN]
+              required:
+                - role
+            example:
+              role: ANALYST
+      responses:
+        200:
+          description: User role updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /records:
+    post:
+      tags:
+        - Financial Records
+      summary: Create a financial record
+      description: Create a new income or expense record. Admin only.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: double
+                type:
+                  type: string
+                  enum: [income, expense]
+                category:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                notes:
+                  type: string
+                  nullable: true
+              required:
+                - amount
+                - type
+                - category
+                - date
+            example:
+              amount: 5000
+              type: income
+              category: Salary
+              date: 2026-04-05
+              notes: Monthly salary payment
+
+      responses:
+        201:
+          description: Record created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialRecord'
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Financial Records
+      summary: List financial records
+      description: Retrieve a paginated list of financial records. Analyst and Admin only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number (1-indexed)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+          description: Records per page
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [income, expense]
+          description: Filter by record type
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter by category
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter records on or after this date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter records on or before this date
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [date, createdAt]
+            default: date
+          description: Sort field
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Sort direction
+
+      responses:
+        200:
+          description: List of records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FinancialRecord'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+                      hasNextPage:
+                        type: boolean
+                      hasPreviousPage:
+                        type: boolean
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Analyst or Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /records/{id}:
+    get:
+      tags:
+        - Financial Records
+      summary: Get a specific financial record
+      description: Retrieve a single record by ID. Analyst and Admin only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Record details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialRecord'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Analyst or Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      tags:
+        - Financial Records
+      summary: Update a financial record
+      description: Update record details. Admin only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: double
+                type:
+                  type: string
+                  enum: [income, expense]
+                category:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                notes:
+                  type: string
+                  nullable: true
+            example:
+              amount: 5100
+              notes: Updated salary payment
+
+      responses:
+        200:
+          description: Record updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialRecord'
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Financial Records
+      summary: Delete a financial record
+      description: Permanently delete a record. Admin only.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Record deleted successfully
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Insufficient permissions (must be Admin)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/summary:
+    get:
+      tags:
+        - Dashboard
+      summary: Get financial summary
+      description: Retrieve total income, expenses, and net balance. Viewer, Analyst, and Admin.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Include records on or after this date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Include records on or before this date
+      responses:
+        200:
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummary'
+              example:
+                totalIncome: 7000
+                totalExpense: 1680
+                netBalance: 5320
+
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/category-breakdown:
+    get:
+      tags:
+        - Dashboard
+      summary: Get category breakdown
+      description: Retrieve income and expense totals grouped by category. Viewer, Analyst, and Admin.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [income, expense]
+          description: Filter by record type
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Include records on or after this date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Include records on or before this date
+      responses:
+        200:
+          description: Category breakdown data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryBreakdownResponse'
+
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/recent-activity:
+    get:
+      tags:
+        - Dashboard
+      summary: Get recent activity
+      description: Retrieve recent financial records ordered by creation date. Viewer, Analyst, and Admin.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+          description: Maximum number of records to return
+      responses:
+        200:
+          description: Recent activity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RecentActivityItem'
+
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/trends:
+    get:
+      tags:
+        - Dashboard
+      summary: Get financial trends
+      description: Retrieve income, expenses, and net balance grouped by period. Viewer, Analyst, and Admin.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupBy
+          in: query
+          schema:
+            type: string
+            enum: [month, week]
+            default: month
+          description: Group results by month or week
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Include records on or after this date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Include records on or before this date
+      responses:
+        200:
+          description: Trend data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrendsResponse'
+
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/monthly-insights:
+    get:
+      tags:
+        - Dashboard
+      summary: Get monthly insights with AI enhancement
+      description: Retrieve deterministic or AI-enhanced monthly spending insights with narrative and highlights. Viewer, Analyst, and Admin.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: month
+          in: query
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+          description: Month in YYYY-MM format (defaults to current month). Must not be a future month.
+      responses:
+        200:
+          description: Monthly insights data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyInsightsResponse'
+
+        400:
+          description: Validation error (invalid month format or future month)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        401:
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
