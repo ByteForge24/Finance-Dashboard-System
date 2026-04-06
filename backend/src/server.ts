@@ -2,9 +2,6 @@ import 'dotenv/config';
 import app from './app.js';
 import prisma from './config/prisma.js';
 
-// DEBUG: Print DATABASE_URL to identify connection issues
-console.log('🔍 DEBUG: DATABASE_URL =', process.env.DATABASE_URL);
-
 // ---------------------------------------------------------------------------
 // Startup Environment Validation
 // The server MUST NOT start without critical secrets. This prevents silent
