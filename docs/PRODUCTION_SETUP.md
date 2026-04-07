@@ -249,15 +249,21 @@ To prevent schema mismatches in future deployments, add schema-push to the build
 
 Update Render **Build Command** to:
 ```bash
-npm install --include=dev && npm run build && npx prisma db push --skip-generate
+npm install --include=dev && npx prisma db push && npm run build
 ```
 
 **What this does:**
 - Installs dependencies (including TypeScript, Prisma)
-- Compiles TypeScript to JavaScript
-- **Applies Prisma schema to production database** (creates enums, tables)
-- Server starts only if schema is successfully applied
-- If schema fails, deployment stops (fail-fast)
+- **Applies Prisma schema to production database FIRST** (creates enums, tables, UUID defaults)
+- **Regenerates Prisma client with correct types from database**
+- Compiles TypeScript to JavaScript (succeeds because types are now available)
+- Server starts only if build is successful
+- If any step fails, deployment stops (fail-fast)
+
+**Why this order matters:**
+- Prisma types must be generated from the database schema
+- Without running `db push` first, TypeScript build fails with missing enum type errors
+- This approach ensures the database schema and application code are always in sync
 
 **Critical:** This prevents the "type does not exist" error from happening again.
 
