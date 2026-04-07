@@ -14,9 +14,31 @@ export const globalRateLimiter = rateLimit({
   max: 100,
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false,  // Disable `X-RateLimit-*` headers
+  // Dashboard pages fan out into several concurrent GET requests; handle them
+  // with a dedicated, softer limiter instead of the generic global one.
+  skip: (req) =>
+    req.method === 'GET' &&
+    typeof req.path === 'string' &&
+    req.path.startsWith('/api/v1/dashboard/'),
   message: {
     error: 'TooManyRequestsError',
     message: 'Too many requests, please try again later.',
+  },
+});
+
+/**
+ * Softer dashboard read limiter — allows normal page loads and refreshes
+ * without tripping the global throttle.
+ * 300 read requests per 15 minutes per IP.
+ */
+export const dashboardReadRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'TooManyRequestsError',
+    message: 'Too many dashboard requests, please try again later.',
   },
 });
 

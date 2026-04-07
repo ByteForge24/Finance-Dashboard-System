@@ -5,6 +5,7 @@ import {
   attachAuthenticatedUser,
   requireActiveUser,
   requirePermission,
+  dashboardReadRateLimiter,
 } from '../../shared/middleware/index.js';
 import { PermissionAction } from '../../shared/access-control/permission-action.js';
 import * as dashboardService from './dashboard.service.js';
@@ -89,6 +90,8 @@ function parseDate(dateString: string): Date | null {
 }
 
 const router = Router();
+
+router.use(dashboardReadRateLimiter);
 
 router.get(
   '/summary',
