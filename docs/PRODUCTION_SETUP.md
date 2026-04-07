@@ -21,6 +21,7 @@ cd backend
 
 # Set production DATABASE_URL
 $env:DATABASE_URL="postgresql://postgres.wdwlijnkisqlnuwmoidh:FfDtBgqIYVh6wm66@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require"
+$env:DIRECT_URL="postgresql://postgres:FfDtBgqIYVh6wm66@db.wdwlijnkisqlnuwmoidh.supabase.co:5432/postgres?sslmode=require"
 
 # Apply schema (creates enums, tables, indexes)
 npx prisma db push --skip-generate
@@ -249,7 +250,7 @@ To prevent schema mismatches in future deployments, add schema-push to the build
 
 Update Render **Build Command** to:
 ```bash
-npm install --include=dev && npx prisma db push && npm run build
+npm install --include=dev && npx prisma db push --skip-generate && npm run build
 ```
 
 **What this does:**
