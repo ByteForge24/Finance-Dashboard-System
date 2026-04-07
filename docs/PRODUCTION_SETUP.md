@@ -10,6 +10,37 @@ The frontend demo credentials use `seed.ts` hashed passwords, but production Sup
 
 ## Production Setup Steps (One-Time)
 
+### Step 0: Apply Prisma Schema (CRITICAL - Do First)
+
+**⚠️ IMPORTANT:** Schema must be applied BEFORE seeding data.
+
+This creates PostgreSQL enum types and ensures database structure matches Prisma:
+
+```bash
+cd backend
+
+# Set production DATABASE_URL
+$env:DATABASE_URL="postgresql://postgres.wdwlijnkisqlnuwmoidh:FfDtBgqIYVh6wm66@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require"
+
+# Apply schema (creates enums, tables, indexes)
+npx prisma db push --skip-generate
+
+# Regenerate Prisma Client
+npx prisma generate
+```
+
+**What this does:**
+- ✅ Creates PostgreSQL enum types (`RecordType`, `Role`, `UserStatus`)
+- ✅ Creates/updates `User` and `FinancialRecord` tables
+- ✅ Creates database indexes
+- ✅ Preserves any existing data (schema-only change)
+
+**Why:** Without this, queries fail with "type does not exist" errors (error 42704).
+
+**See:** [SCHEMA_MISMATCH_FIX.md](./SCHEMA_MISMATCH_FIX.md) for detailed explanation.
+
+---
+
 ### Step 1: Generate Correct Seed SQL
 
 This generates SQL with bcrypt hashes that EXACTLY MATCH the frontend demo credentials:
@@ -210,34 +241,65 @@ If this fails, deployment stops (exit code 1) before serving broken API.
 
 ---
 
-## Database Connection Details
+## Automated Deployment (Render Integration)
 
-To make this automatic on Render deployment:
+To prevent schema mismatches in future deployments, add schema-push to the build process:
 
-1. Add `npm run db:seed` to Render **Build Command**:
-   ```
-   npm install --include=dev && npm run build && npm run db:seed
-   ```
+### Render Build Command (Recommended)
 
-**This would**:
-   - Compile TypeScript
-   - Seed database automatically
-   - No manual SQL needed
-
-**Drawback**: Requires stopping server during seed (difficult during rolling deploys)
-
-**Better approach**: Create an admin API endpoint:
-```
-POST /api/v1/admin/seed/users
-Authorization: Bearer <admin-token>
-Body: { "resetExisting": false }
+Update Render **Build Command** to:
+```bash
+npm install --include=dev && npm run build && npx prisma db push --skip-generate
 ```
 
-For now, manual SQL seeding is safest and most explicit.
+**What this does:**
+- Installs dependencies (including TypeScript, Prisma)
+- Compiles TypeScript to JavaScript
+- **Applies Prisma schema to production database** (creates enums, tables)
+- Server starts only if schema is successfully applied
+- If schema fails, deployment stops (fail-fast)
+
+**Critical:** This prevents the "type does not exist" error from happening again.
+
+### Render Environment Variables
+
+Ensure set in Render dashboard:
+```
+DATABASE_URL = postgresql://postgres.wdwlijnkisqlnuwmoidh:FfDtBgqIYVh6wm66@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require
+JWT_SECRET = [your jwt secret]
+NODE_ENV = production
+CORS_ORIGIN = https://finance-dashboard-pro.netlify.app
+```
+
+### If You Want to Seed Data Automatically
+
+To add financial records during deployment (optional):
+
+```bash
+npm install --include=dev && npm run build && npx prisma db push --skip-generate && npx tsx prisma/seed.ts
+```
+
+**Note:** This will re-create all financial records, losing any manual changes.
 
 ---
 
-## Testing Different Scenarios
+## Recommended Deployment Sequence
+
+**For first-time production setup:**
+1. Run Step 0 (schema-push) manually
+2. Run verification to confirm schema
+3. Manually seed via SQL (Steps 1-2)
+4. Test login (Step 5)
+5. Update Render build command for future deployments
+
+**For subsequent deployments:**
+- Update Render **Build Command** to include `npx prisma db push --skip-generate`
+- This ensures schema stays in sync automatically
+- Only need manual steps if adding new data
+
+---
+
+## Testing Production Setup
 
 ### Test Active User Login (Should Work)
 ```
