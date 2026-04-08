@@ -3,9 +3,6 @@
 > **A Full-Stack Production Financial Management Application**  
 > Backend API + Frontend SPA + E2E Testing Suite + Production Deployment
 
-**Project Status**: ✅ **PRODUCTION READY**  
-**Deployment**: Live at https://finance-dashboard-pro.netlify.app + API at https://finance-dashboard-api-hqjk.onrender.com
-
 ---
 
 ## 📋 Table of Contents
