@@ -1,0 +1,28 @@
+{
+  "name": "finance-dashboard-production-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Production-safe Playwright monitoring tests for the Finance Dashboard deployment",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "playwright test --reporter=html",
+    "test:headless": "PLAYWRIGHT_SLOW_MO=250 playwright test --reporter=html",
+    "test:headed": "PLAYWRIGHT_SLOW_MO=250 playwright test --headed --reporter=html",
+    "test:headed:serial": "PLAYWRIGHT_SLOW_MO=250 playwright test --headed --reporter=html --workers=1",
+    "test:debug": "PLAYWRIGHT_SLOW_MO=500 playwright test --headed --debug",
+    "test:spec": "PLAYWRIGHT_SLOW_MO=250 playwright test --headed --reporter=html",
+    "test:safe": "playwright test --reporter=html e2e/frontend*.spec.ts e2e/api-security-and-integrity.spec.ts",
+    "test:safe:headed": "PLAYWRIGHT_SLOW_MO=250 playwright test --headed --reporter=html --workers=1 e2e/frontend*.spec.ts e2e/api-security-and-integrity.spec.ts",
+    "test:writes": "ALLOW_PRODUCTION_WRITES=true PLAYWRIGHT_SLOW_MO=250 playwright test --headed --reporter=html --workers=1 e2e/*optional.spec.ts",
+    "test:user-mgmt": "ALLOW_PERSISTENT_PROD_USER_TESTS=true PLAYWRIGHT_SLOW_MO=250 playwright test --headed --reporter=html --workers=1 e2e/backend-user-management.optional.spec.ts",
+    "test:records": "ALLOW_PRODUCTION_WRITES=true PLAYWRIGHT_SLOW_MO=250 playwright test --headed --reporter=html --workers=1 e2e/backend-record-lifecycle.optional.spec.ts",
+    "test:ratelimit": "ENABLE_RATE_LIMIT_CHECKS=true PLAYWRIGHT_SLOW_MO=250 playwright test --headed --reporter=html --workers=1",
+    "test:report": "playwright show-report playwright-report",
+    "test:list": "playwright test --list"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.0"
+  }
+}
