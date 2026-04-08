@@ -17,56 +17,30 @@
 ## 🏛️ System Architecture Diagram
 
 ```mermaid
-graph TB
+flowchart TD
     User["👤 User Browser"]
-    
-    subgraph Frontend["🎨 Netlify Frontend<br/>React 18 | TypeScript | Vite"]
-        Login["Login Page<br/>Sign In / Sign Up"]
-        Dashboard["Dashboard Page<br/>Analytics & Summary"]
-        Records["Records Page<br/>Transaction Management"]
-        Users["Users Page<br/>User Management"]
-        Settings["Settings Page<br/>Preferences"]
-    end
-    
-    subgraph Backend["🔌 Render Backend<br/>Node.js 18+ | Express | TypeScript"]
-        AuthMW["Auth Middleware<br/>JWT Verification"]
-        RBAC["RBAC Middleware<br/>Role-Based Access"]
-        Validation["Validation Layer<br/>Input Sanitization"]
-        AuthRoute["Auth Routes<br/>/api/v1/auth/*"]
-        RecordsRoute["Records Routes<br/>/api/v1/records/*"]
-        DashRoute["Dashboard Routes<br/>/api/v1/dashboard/*"]
-        UserRoute["Users Routes<br/>/api/v1/users/*"]
-    end
-    
-    subgraph Database["💾 Supabase PostgreSQL<br/>Managed Database"]
-        Users_Table["Users Table<br/>Roles & Status"]
-        Records_Table["Records Table<br/>Income/Expense"]
-        Indexes["Indexes<br/>Performance"]
-    end
-    
-    GitActions["⚙️ GitHub Actions<br/>CI/CD Pipeline"]
-    
-    User -->|HTTPS Request| Frontend
-    Frontend -->|REST API + JWT Token| Backend
-    Backend -->|Authentication Check| AuthMW
-    AuthMW -->|Role Verification| RBAC
-    RBAC -->|Route Handling| Validation
-    Validation -->|SQL Queries| Database
-    Database -->|Data Response| Validation
-    Validation -->|JSON Response| Backend
-    Backend -->|API Response| Frontend
+    Frontend["⚛️ Netlify Frontend<br/>React 18 / TypeScript / Vite"]
+    Backend["🖥️ Render Backend<br/>Node.js / Express / Prisma"]
+    DB[("💾 PostgreSQL 16<br/>Supabase")]
+    JWT["🔐 JWT Auth<br/>HS256 + Rate Limiting"]
+    RBAC["👥 Role-Based Access<br/>VIEWER / ANALYST / ADMIN"]
+    Testing["✅ Playwright<br/>E2E Testing"]
+    GitHub["⚙️ GitHub Actions<br/>CI/CD Pipeline"]
+
+    User -->|HTTPS| Frontend
+    Frontend -->|Sign In / Sign Up| JWT
+    Frontend -->|REST API| Backend
+    Frontend -->|Check Role| RBAC
+    Backend -->|Verify Token| JWT
+    Backend -->|Enforce Permission| RBAC
+    Backend -->|Query Data| DB
+    DB -->|Return Data| Backend
+    Backend -->|JSON Response| Frontend
     Frontend -->|Render UI| User
-    
-    GitActions -->|Auto Deploy| Frontend
-    GitActions -->|Auto Deploy| Backend
-    
-    style User fill:#fff3cd,stroke:#ff9800,stroke-width:3px,color:#000
-    style Frontend fill:#61dafb,stroke:#0288d1,stroke-width:2px,color:#000
-    style Backend fill:#90c53f,stroke:#558b2f,stroke-width:2px,color:#000
-    style Database fill:#9c27b0,stroke:#6a1b9a,stroke-width:2px,color:#fff
-    style GitActions fill:#f44336,stroke:#c62828,stroke-width:2px,color:#fff
-    style AuthMW fill:#ff6b6b,stroke:#c92a2a,stroke-width:2px,color:#fff
-    style RBAC fill:#ff8a80,stroke:#d32f2f,stroke-width:2px,color:#fff
+    Testing -->|Automated Tests| Frontend
+    Testing -->|API Security| Backend
+    GitHub -->|Auto Deploy| Frontend
+    GitHub -->|Auto Deploy| Backend
 ```
 
 ---
