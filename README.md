@@ -48,17 +48,47 @@ flowchart TD
 
 ## 📋 Table of Contents
 
-1. [System Architecture](#-system-architecture)
-2. [Project Journey](#-project-journey)
-3. [Technology Stack](#-technology-stack)
-4. [Authentication System](#-authentication--authorization)
-5. [Database Design](#-database-design)
-6. [API Specification](#-api-specification)
-7. [Frontend Features](#-frontend-features)
-8. [Testing Suite](#-testing-suite)
-9. [Deployment](#-deployment)
-10. [Quick Start](#-quick-start)
-11. [Project Structure](#-project-structure)
+1. [Screenshot Gallery](#-screenshot-gallery)
+2. [System Architecture](#-system-architecture)
+3. [Project Journey](#-project-journey)
+4. [Technology Stack](#-technology-stack)
+5. [Authentication System](#-authentication--authorization)
+6. [Database Design](#-database-design)
+7. [API Specification](#-api-specification)
+8. [Frontend Features](#-frontend-features)
+9. [Testing Suite](#-testing-suite)
+10. [Deployment](#-deployment)
+11. [Quick Start](#-quick-start)
+12. [Project Structure](#-project-structure)
+
+---
+
+## 📸 Screenshot Gallery
+
+### 1. **Login Page** — Demo Account & User Authentication
+Hybrid authentication system supporting both demo access and registered accounts with real-time validation and secure JWT token generation.
+
+![Login Page](./screenshots/01-login-page.png)
+
+### 2. **Dashboard** — Financial Analytics & Insights
+Comprehensive dashboard displaying financial summaries, income vs. expense trends, category breakdown charts, top transactions, and AI-powered spending insights.
+
+![Dashboard](./screenshots/02-dashboard-page.png)
+
+### 3. **Records Management** — Transaction History & Filtering
+Complete financial records view with advanced filtering, sorting, category organization, and soft-delete support for data integrity.
+
+![Records Page](./screenshots/03-records-page.png)
+
+### 4. **Access Control Demo** — Role-Based Authorization
+Shows the unauthorized page (403 Forbidden) when a Viewer attempts to access admin-only features, demonstrating RBAC enforcement in action.
+
+![Unauthorized Page](./screenshots/04-unauthorized-page.png)
+
+### 5. **User Management** — Admin Controls & User Administration
+Admin-only interface for managing user accounts, roles, permissions, and user lifecycle with audit trails.
+
+![Users Page](./screenshots/05-users-page.png)
 
 ---
 
