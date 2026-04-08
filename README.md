@@ -14,6 +14,57 @@
 
 ---
 
+## 🏛️ System Architecture Diagram
+
+```mermaid
+graph TB
+    User["👤 End User<br/>(Browser)"]
+    
+    subgraph UI["🎨 Frontend Layer - Netlify"]
+        React["React SPA<br/>(Vite Build)<br/>Hash Routing"]
+        Pages["Pages<br/>Login • Dashboard<br/>Records • Users"]
+        Auth["Auth State<br/>(localStorage)"]
+    end
+    
+    subgraph API["🔌 API Layer - Render"]
+        Express["Express Server<br/>(Node.js 18+)<br/>TypeScript"]
+        AuthMW["Auth Middleware<br/>(JWT Verify)"]
+        RBAC["RBAC Middleware<br/>(Role Check)"]
+        Routes["Route Handlers<br/>Auth • Users • Records<br/>Dashboard • Health"]
+        Validation["Input Validation<br/>(Type-Safe)"]
+    end
+    
+    subgraph DB["💾 Data Layer - Supabase"]
+        Prisma["Prisma ORM<br/>(Type-Safe Queries)"]
+        PostgreSQL["PostgreSQL<br/>Users Table<br/>Records Table"]
+    end
+    
+    User -->|HTTP Requests<br/>+ JWT Token| React
+    React -->|Sign In<br/>Sign Up<br/>Logout| Pages
+    Pages -->|Fetch API<br/>Authorization Header| Express
+    Express -->|1. Verify Token| AuthMW
+    AuthMW -->|2. Check Role| RBAC
+    RBAC -->|3. Route Handler| Routes
+    Routes -->|4. Validate Data| Validation
+    Validation -->|5. ORM Query| Prisma
+    Prisma -->|SQL| PostgreSQL
+    PostgreSQL -->|Data + Metadata| Prisma
+    Prisma -->|Response Object| Routes
+    Routes -->|JSON Response| Pages
+    Pages -->|Update UI| React
+    React -->|JWT Token| Auth
+    Auth -->|Session Restored| React
+    
+    style User fill:#fff3cd,stroke:#ff9800,stroke-width:2px
+    style React fill:#61dafb,stroke:#000,stroke-width:2px,color:#000
+    style Express fill:#90c53f,stroke:#000,stroke-width:2px,color:#000
+    style PostgreSQL fill:#336791,stroke:#fff,stroke-width:2px,color:#fff
+    style AuthMW fill:#ff6b6b,stroke:#c92a2a,stroke-width:2px
+    style RBAC fill:#ff6b6b,stroke:#c92a2a,stroke-width:2px
+```
+
+---
+
 ## 📋 Table of Contents
 
 1. [System Architecture](#-system-architecture)
