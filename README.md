@@ -28,19 +28,19 @@ flowchart TD
     GitHub["⚙️ GitHub Actions<br/>CI/CD Pipeline"]
 
     User -->|HTTPS| Frontend
-    Frontend -->|Sign In / Sign Up| JWT
-    Frontend -->|REST API| Backend
-    Frontend -->|Check Role| RBAC
-    Backend -->|Verify Token| JWT
-    Backend -->|Enforce Permission| RBAC
-    Backend -->|Query Data| DB
-    DB -->|Return Data| Backend
-    Backend -->|JSON Response| Frontend
-    Frontend -->|Render UI| User
-    Testing -->|Automated Tests| Frontend
-    Testing -->|API Security| Backend
-    GitHub -->|Auto Deploy| Frontend
-    GitHub -->|Auto Deploy| Backend
+    Frontend --> JWT
+    Frontend --> Backend
+    Frontend --> RBAC
+    Backend --> JWT
+    Backend --> RBAC
+    Backend --> DB
+    DB --> Backend
+    Backend --> Frontend
+    Frontend --> User
+    Testing --> Frontend
+    Testing --> Backend
+    GitHub --> Frontend
+    GitHub --> Backend
 ```
 
 ---
