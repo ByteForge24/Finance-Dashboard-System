@@ -1,8 +1,6 @@
 # 💰 Finance Dashboard System
 
-## 🎯 Enterprise-Grade Financial Management Platform
-
-A **production-ready, full-stack financial management application** built with modern technologies and best practices. Designed for individuals and small businesses to track income, expenses, and financial insights with multiple user roles and sophisticated access controls.
+> A financial management platform to track income, expenses, and analyze spending patterns with role-based access control, supported by secure and structured APIs for managing financial data and insights.
 
 **Key Highlights:**
 - 🔐 **Hybrid Authentication** — Demo access, user signup, and secure JWT-based login with rate limiting
