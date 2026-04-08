@@ -1,10 +1,18 @@
-# 💰 Financial Dashboard System
+# 💰 Finance Dashboard System
 
-**A production-ready full-stack financial management platform with role-based access control, comprehensive testing, and cloud deployment.**  
-**Features hybrid authentication, soft-delete records, 20+ REST APIs, and responsive React SPA—deployed live on Netlify, Render, and Supabase.**
+## 🎯 Enterprise-Grade Financial Management Platform
 
-> **A Full-Stack Production Financial Management Application**  
-> Backend API + Frontend SPA + E2E Testing Suite + Production Deployment
+A **production-ready, full-stack financial management application** built with modern technologies and best practices. Designed for individuals and small businesses to track income, expenses, and financial insights with multiple user roles and sophisticated access controls.
+
+**Key Highlights:**
+- 🔐 **Hybrid Authentication** — Demo access, user signup, and secure JWT-based login with rate limiting
+- 👥 **Role-Based Access Control** — 3-tier permission system (VIEWER, ANALYST, ADMIN) enforced across all operations
+- 📊 **Advanced Analytics** — Dashboard with financial summaries, trends, category breakdown, and AI insights
+- ✅ **Comprehensive Testing** — 58 Playwright E2E tests with 72% coverage, all critical paths verified
+- 🚀 **Production Deployed** — Live on Netlify (frontend), Render (backend), Supabase (database)
+- 🛡️ **Enterprise Security** — Soft-delete pattern, input validation, CORS protection, RBAC enforcement
+
+**Tech Stack:** TypeScript • React • Express • PostgreSQL • Prisma • JWT • Tailwind CSS • Playwright
 
 ---
 
