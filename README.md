@@ -109,6 +109,47 @@ flowchart TD
 
 ---
 
+## 🚀 Getting Started
+
+### Quick Links
+- **Live Demo**: [https://finance-dashboard-pro.netlify.app](https://finance-dashboard-pro.netlify.app)
+- **API Server**: [https://finance-dashboard-api-hqjk.onrender.com](https://finance-dashboard-api-hqjk.onrender.com)
+- **GitHub Repo**: [https://github.com/ByteForge24/Finance-Dashboard-System](https://github.com/ByteForge24/Finance-Dashboard-System)
+
+### Demo Accounts (No Signup Required)
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Viewer** | `viewer@finance-dashboard.local` | `ViewerPassword123` |
+| **Analyst** | `analyst@finance-dashboard.local` | `AnalystPassword123` |
+| **Admin** | `admin@finance-dashboard.local` | `AdminPassword123` |
+
+### Local Development
+
+```bash
+# Clone repository
+git clone https://github.com/ByteForge24/Finance-Dashboard-System.git
+cd Finance-Dashboard-System
+
+# Backend setup
+cd backend
+npm run setup
+npm run dev  # Runs on http://localhost:3000
+
+# Frontend setup (in new terminal)
+cd ../frontend
+npm install
+npm run dev  # Runs on http://localhost:5173
+
+# Run E2E Tests
+cd ../tests
+npm install
+npx playwright install --with-deps
+npx playwright test --headed
+
+```
+---
+
 ## 🏗️ System Architecture
 
 ### High-Level System Design
