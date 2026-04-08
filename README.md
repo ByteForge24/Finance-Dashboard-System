@@ -1,22 +1,6 @@
 # 💰 Finance Dashboard System
 
-## 🎯 Enterprise-Grade Financial Management Platform
-
-A **production-ready, full-stack financial management application** built with modern technologies and best practices. Designed for individuals and small businesses to track income, expenses, and financial insights with multiple user roles and sophisticated access controls.
-
----
-
-<p align="center">
-  <a href="https://finance-dashboard-pro.netlify.app"><img src="https://img.shields.io/badge/Live%20Demo-00C7FD?style=for-the-badge&logo=netlify&logoColor=white" /></a>
-  <a href="https://finance-dashboard-api-hqjk.onrender.com/health"><img src="https://img.shields.io/badge/API%20Server-46E3B7?style=for-the-badge&logo=render&logoColor=white" /></a>
-  <a href="https://github.com/ByteForge24/Finance-Dashboard-System"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" /></a>
-</p>
-
-<p align="center">
-  <img src="https://skillicons.dev/icons?i=react,ts,tailwind,nodejs,express,postgres,docker&theme=dark" />
-</p>
-
----
+> A financial management platform to track income, expenses, and analyze spending patterns with role-based access control, supported by secure and structured APIs for managing financial data and insights.
 
 **Key Highlights:**
 - 🔐 **Hybrid Authentication** — Demo access, user signup, and secure JWT-based login with rate limiting
