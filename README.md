@@ -14,7 +14,7 @@
 
 ---
 
-## 🏛️ System Architecture Diagram
+## 🏛️ Architecture 
 
 ```mermaid
 flowchart TD
