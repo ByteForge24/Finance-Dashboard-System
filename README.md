@@ -1,4 +1,4 @@
-# 💰 Finance Dashboard System - Complete Project Documentation
+# 💰 Financial Dashboard System
 
 > **A Full-Stack Production Financial Management Application**  
 > Backend API + Frontend SPA + E2E Testing Suite + Production Deployment
