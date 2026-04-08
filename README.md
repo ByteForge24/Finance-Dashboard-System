@@ -387,198 +387,118 @@ Full API documentation in `backend/docs/openapi.yaml`
 
 ---
 
-## 🎨 Frontend Features
-
-### Pages & Features
-
-**Login Page**
-- Sign In tab (email + password)
-- Sign Up tab (new account creation)
-- 3 Demo buttons (instant login)
-
-**Dashboard Page**
-- Financial summary (income, expenses, balance)
-- Recent activity list
-- Category breakdown (pie chart)
-- Spending trends (line chart)
-- Monthly insights
-
-**Records Page** (Analyst+)
-- Transactions table (paginated)
-- Filters by category, date, type
-- Search functionality
-- View/edit/delete (admin only)
-
-**Users Page** (Admin)
-- User list with roles and status
-- User search
-- Role management
-- Status management
-
-**Settings Page**
-- Dark mode toggle
-- Notification preferences
-- Profile information
-
----
-
-## ✅ Testing Suite
-
-### Test Coverage
-
-```
-PLAYWRIGHT E2E TESTS: 58 Total
-├── 11 Tests: Authentication & Sign In
-│   ✓ Demo button authentication
-│   ✓ Admin/Analyst/Viewer login
-│   ✓ Form validation
-│   ✓ Error handling
-│   ✓ Session persistence
-│   └── ✓ Role-based permissions
-│
-├── 7 Tests: Dashboard Features
-│   ✓ Dashboard loads
-│   ✓ Content visibility
-│   ✓ Chart rendering
-│   └── ✓ Data refresh
-│
-├── 10 Tests: Records Management
-│   ✓ Table rendering
-│   ✓ Pagination
-│   ✓ Filtering & sorting
-│   └── ✓ CRUD operations
-│
-├── 5 Tests: API Security
-│   ✓ Health check
-│   ✓ CORS headers
-│   ✓ Auth validation
-│   ✓ RBAC enforcement
-│   └── ✓ Data consistency
-│
-└── 25 Tests: Backend & Mobile
-    ✓ Write operations
-    ✓ User management
-    ✓ Mobile responsiveness
-
-RESULTS: 42 Passing | 11 Failed | 5 Skipped
-SUCCESS RATE: 72% (100% critical paths)
-```
-
-### Running Tests
-
-```bash
-cd tests
-npm install
-npx playwright install --with-deps
-npx playwright test --headed
-```
-
----
-
-## 🚀 Deployment
-
-### Production Deployment
-
-**Frontend**: https://finance-dashboard-pro.netlify.app
-- Hosted on Netlify (CDN globally)
-- Auto-deploys on Git push
-- Built with Vite
-
-**Backend**: https://finance-dashboard-api-hqjk.onrender.com
-- Hosted on Render (Node.js)
-- Auto-deploys on Git push
-- TypeScript compiled to JS
-
-**Database**: Supabase PostgreSQL
-- Managed database
-- Automatic backups
-- SSL encrypted
-
-```
-GitHub Repository
-    ↓
-Automatic Deploy Trigger
-    ├─▶ Netlify (Frontend)
-    └─▶ Render (Backend)
-         ↓
-    Supabase PostgreSQL
-```
-
----
-
-## 🏃 Quick Start (Production)
-
-**No setup needed!** Just visit:
-
-```bash
-# Frontend
-https://finance-dashboard-pro.netlify.app
-
-# Demo Accounts (All working)
-Email: viewer@finance-dashboard.local / Password: ViewerPassword123
-Email: analyst@finance-dashboard.local / Password: AnalystPassword123
-Email: admin@finance-dashboard.local / Password: AdminPassword123
-```
-
----
-
 ## 📁 Project Structure
 
 ```
 finance-dashboard-system/
-├── backend/          # Node.js/Express API
-│   ├── src/
-│   │   ├── modules/   # Auth, Users, Records, Dashboard
-│   │   ├── routes/    # API endpoints
-│   │   └── shared/    # RBAC, validation, errors
-│   ├── prisma/        # Database schema
-│   ├── tests/         # Unit & integration tests
-│   └── package.json
 │
-├── frontend/         # React SPA (Vite)
-│   ├── src/
-│   │   ├── pages/    # Login, Dashboard, Records, Users, Settings
-│   │   ├── components/ # Reusable components
-│   │   ├── hooks/    # Custom React hooks
-│   │   └── utils/    # API client, formatters
-│   └── package.json
+├── backend/ # Node.js/Express API Server
+│ ├── src/
+│ │ ├── app.ts # Express app configuration
+│ │ ├── server.ts # Server entry point
+│ │ │
+│ │ ├── config/
+│ │ │ ├── auth-config.ts # JWT configuration
+│ │ │ └── prisma.ts # Database client singleton
+│ │ │
+│ │ ├── modules/ # Feature modules (by domain)
+│ │ │ ├── auth/ # Authentication module
+│ │ │ │ ├── auth.types.ts
+│ │ │ │ ├── auth.service.ts
+│ │ │ │ ├── auth.routes.ts
+│ │ │ │ └── auth.mapper.ts
+│ │ │ │
+│ │ │ ├── users/ # User management module
+│ │ │ │ ├── users.types.ts
+│ │ │ │ ├── users.service.ts
+│ │ │ │ └── users.routes.ts
+│ │ │ │
+│ │ │ ├── records/ # Financial records module
+│ │ │ │ ├── records.types.ts
+│ │ │ │ ├── records.service.ts
+│ │ │ │ └── records.routes.ts
+│ │ │ │
+│ │ │ └── dashboard/ # Dashboard analytics module
+│ │ │ ├── dashboard.types.ts
+│ │ │ ├── dashboard.service.ts
+│ │ │ └── dashboard.routes.ts
+│ │ │
+│ │ ├── routes/ # Route aggregation
+│ │ │ ├── api.ts # /api routes
+│ │ │ ├── v1.ts # /api/v1 routes
+│ │ │ └── health.ts # /health endpoint
+│ │ │
+│ │ └── shared/ # Shared utilities & middleware
+│ │ ├── access-control/ # RBAC implementation
+│ │ ├── domain/ # Domain models
+│ │ ├── errors/ # Error classes & handler
+│ │ ├── middleware/ # Express middleware
+│ │ ├── utils/ # Utility functions
+│ │ └── validation/ # Input validators
+│ │
+│ ├── prisma/
+│ │ ├── schema.prisma # Database schema definition
+│ │ └── seed.ts # Database seeding script
+│ │
+│ ├── tests/ # Unit & integration tests
+│ │ ├── integration/ # Integration tests
+│ │ └── unit/ # Unit tests
+│ │
+│ ├── package.json
+│ ├── tsconfig.json
+│ ├── jest.config.js
+│ └── README.md
 │
-├── tests/           # Playwright E2E tests
-│   ├── e2e/         # Test specs (58 tests)
-│   ├── support/     # Test utilities
-│   └── package.json
+├── frontend/ # React SPA (Vanilla JS with Vite)
+│ ├── src/
+│ │ ├── api.js # API client & http utilities
+│ │ ├── app.js # Main application logic
+│ │ ├── auth.js # Authentication & token management
+│ │ │
+│ │ ├── layout.js # Layout & navigation component
+│ │ │
+│ │ ├── page-login.js # Login page (Sign In / Sign Up)
+│ │ ├── page-dashboard.js # Dashboard page (Analytics)
+│ │ ├── page-records.js # Records page (Transactions)
+│ │ ├── page-users.js # Users page (Admin only)
+│ │ ├── page-settings.js # Settings page (Preferences)
+│ │ ├── page-unauthorized.js # 403 error page
+│ │ │
+│ │ ├── toast.js # Toast notifications utility
+│ │ │
+│ │ └── index.css # Global styles (Tailwind CSS)
+│ │
+│ ├── index.html # HTML template
+│ ├── vite.config.js # Vite configuration
+│ ├── tailwind.config.js # Tailwind CSS config
+│ ├── package.json
+│ └── README.md
 │
-└── README.md        # This file
+├── tests/ # Playwright E2E Tests
+│ ├── e2e/ # End-to-end test specs
+│ │ ├── frontend-signin.spec.ts # 11 authentication tests
+│ │ ├── frontend-dashboard-detailed.spec.ts
+│ │ ├── frontend-records-detailed.spec.ts
+│ │ ├── frontend-ux-and-mobile.spec.ts
+│ │ ├── api-security-and-integrity.spec.ts
+│ │ ├── production-writes.optional.spec.ts
+│ │ ├── backend-user-management.optional.spec.ts
+│ │ └── backend-record-lifecycle.optional.spec.ts
+│ │
+│ ├── support/ # Test utilities
+│ │ ├── app.ts # Page object & helpers
+│ │ ├── api.ts # API testing utilities
+│ │ └── env.ts # Environment config
+│ │
+│ ├── playwright.config.ts # Playwright configuration
+│ ├── package.json
+│ └── README.md
+│
+└── README.md # Project documentation
 ```
 
 ---
 
-## ✨ Project Status
-
-### Completion Summary
-
-| Aspect | Status | Notes |
-|--------|--------|-------|
-| Backend API | ✅ Complete | 20+ endpoints, all CRUD operations |
-| Frontend SPA | ✅ Complete | 6 pages, responsive, dark mode |
-| Database | ✅ Complete | PostgreSQL with soft-delete |
-| Authentication | ✅ Complete | Hybrid demo + signup + login |
-| RBAC | ✅ Complete | 3 roles enforced everywhere |
-| E2E Tests | ✅ Complete | 58 tests, 72% coverage |
-| Deployment | ✅ Complete | Live on Netlify + Render |
-
-### What's Being Tested in Production
-
-- ✅ User authentication (all 3 roles)
-- ✅ Financial record management (create, read, update, delete)
-- ✅ Dashboard analytics (summary, trending, insights, breakdown)
-- ✅ Role-based access control (permission enforcement)
-- ✅ Mobile responsiveness
-- ✅ API security (CORS, sanitization, RBAC)
-- ✅ Session persistence
-- ✅ Data soft-delete pattern
-
----
 
 **Built with **❤️** using TypeScript, React, Express, PostgreSQL, and Playwright**
 
