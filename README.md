@@ -70,33 +70,16 @@ flowchart TD
 | **Language** | TypeScript | Type-safe backend code |
 | **Framework** | Express.js | Lightweight HTTP server |
 | **Database** | PostgreSQL | Relational data storage |
-| **ORM** | Prisma | Type-safe database access |
 | **Authentication** | JWT (HS256) | Stateless auth tokens |
-| **Validation** | Custom Layer | Runtime type validation |
-| **Testing** | Jest + Supertest | Unit & integration tests |
 | **Deployment** | Render | Node.js hosting platform |
 
 ### Frontend Stack
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
-| **Runtime** | Modern Browser | Chrome, Firefox, Safari |
-| **Build Tool** | Vite | Fast development & production builds |
-| **Framework** | React 18 | UI component library |
 | **Styling** | Tailwind CSS | Utility-first CSS framework |
-| **Routing** | Custom Hash Router | SPA routing for static hosting |
-| **State** | React Context | Client-side state management |
 | **HTTP Client** | Fetch API | REST API calls |
 | **Deployment** | Netlify | Static hosting with auto-deploy |
-
-### Testing Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Test Runner** | Playwright | End-to-end browser automation |
-| **Browsers** | Chromium, Firefox, WebKit | Cross-browser testing |
-| **Deployment Testing** | Production URLs | Real environment validation |
-| **Coverage** | 58+ Tests | Auth, RBAC, Features, API, Mobile |
 
 ### Cloud Infrastructure
 
@@ -151,152 +134,85 @@ npx playwright test --headed
 
 ---
 
-## 🔐 Authentication & Authorization
+## ✨ Core Features
 
-### Hybrid Authentication System
+### Authentication & Security
+- Hybrid Authentication (Demo access, user signup, secure login)
+- JWT Token-Based Auth (HS256 encryption, 24-hour expiration)
+- Rate Limiting (5 login attempts per 15 minutes, 10 signups per hour)
+- Password Security (bcrypt hashing)
+- Session Management (localStorage-based token persistence)
+- No Username Enumeration (generic error messages)
 
-The system implements a sophisticated hybrid authentication approach that balances security with user experience:
+### Role-Based Access Control
+- VIEWER Role (Dashboard-only access, read-only)
+- ANALYST Role (Dashboard + read-only financial records)
+- ADMIN Role (Full system access with create, edit, delete)
+- Permission Enforcement (RBAC checks on all endpoints)
+- Role Management (Dynamic role assignment)
 
-#### 1. **Demo Access (Fast Track)**
+### Financial Record Management
+- Create Records (Add income & expense transactions)
+- View Records (Paginated list with filters)
+- Edit Records (Update transaction details)
+- Soft Delete (Logical deletion with data retention)
+- Categories (Organize transactions)
+- Date Tracking (Validation for transaction dates)
 
-```
-EVALUATOR
-   │
-   ├─▶ Click "Demo - Viewer" Button
-   │   └─ Instant Login (pre-filled credentials)
-   │      └─ Redirected to Dashboard
-   │
-   ├─▶ Click "Demo - Analyst" Button
-   │   └─ Instant Login
-   │      └─ Dashboard + Records Access
-   │
-   └─▶ Click "Demo - Admin" Button
-       └─ Instant Login
-          └─ Full System Access
-          
-BENEFITS:
-✓ No signup friction
-✓ Immediate access to all features
-✓ Safe (pre-registered demo accounts)
-✓ Rate-limited (5 logins per 15 minutes)
-```
+### Dashboard Analytics
+- Financial Summary (Total income, expenses, balance)
+- Spending Trends (30-day patterns)
+- Category Breakdown (Expense distribution)
+- Recent Activity (Latest transactions)
+- Real-Time Updates (Live data refresh)
 
-#### 2. **User Signup (New Accounts)**
+### User Interface & UX
+- Responsive Design (Mobile, tablet, desktop)
+- Dark Mode (Light/dark theme toggle)
+- Fast Performance (Vite-optimized)
+- Intuitive Navigation (Hash-based routing)
+- Form Validation (Real-time error messages)
+- Toast Notifications (Feedback messages)
 
-```
-NEW USER
-   │
-   ├─▶ Click "Sign Up" Tab
-   │   │
-   │   ├─ Enter email + password
-   │   ├─ Submit form
-   │   │
-   │   ├─ Validation: Email format, password strength
-   │   ├─ Check: Email not already registered
-   │   │       Email not in reserved demo list
-   │   │
-   │   └─▶ Create account
-   │       ├─ Hash password (bcrypt)
-   │       ├─ Assign default VIEWER role
-   │       ├─ Create database record
-   │       └─ Return auth token (JWT)
-   │
-   └─▶ Automatically redirected to dashboard
-   
-RATE LIMITING: 10 signup requests per hour
-```
+### Testing & Quality
+- 58 E2E Tests (Comprehensive test suite)
+- 72% Code Coverage (All critical paths)
+- Cross-Browser Testing (Chromium, Firefox, WebKit)
+- Mobile Testing (Responsive validation)
+- Security Tests (CORS, RBAC, auth)
+- Production Validation (Live URL testing)
 
-#### 3. **User Login (Existing Accounts)**
+### Deployment & DevOps
+- Frontend Hosting (Netlify with auto-deploy)
+- Backend Hosting (Render with auto-deploy)
+- Database (Supabase PostgreSQL)
+- CI/CD Pipeline (GitHub Actions)
+- HTTPS/SSL (Encrypted connections)
+- Health Checks (API monitoring)
 
-```
-EXISTING USER
-   │
-   ├─▶ Click "Sign In" Tab
-   │   │
-   │   ├─ Enter email + password
-   │   ├─ Submit form
-   │   │
-   │   ├─ Check: Account exists
-   │   ├─ Verify: Password matches (bcrypt)
-   │   ├─ Check: Account status is ACTIVE
-   │   │
-   │   ├─ On Success:
-   │   │  └─ Generate JWT token (expires in 24 hours)
-   │   │     └─ Return token to client
-   │   │     └─ Redirect to dashboard
-   │   │
-   │   └─ On Failure:
-   │      └─ Return generic error (no username enumeration)
-   │         "Invalid email or password"
-   │
-   └─▶ Rate Limiting: 5 login attempts per 15 minutes
-```
+### API Features
+- RESTful API (20+ endpoints)
+- API Versioning (/api/v1/*)
+- Bearer Token Auth (JWT in header)
+- Input Validation (Type-safe)
+- OpenAPI Documentation
+- Error Handling (Consistent responses)
 
-#### 4. **Token Flow**
+### Database
+- PostgreSQL (ACID compliance)
+- Prisma ORM (Type-safe queries)
+- UUID Primary Keys
+- Performance Indexes
+- Soft Delete (Logical deletion)
+- Data Integrity (Constraints)
 
-```
-REQUEST FLOW:
-┌──────────────────────────────────────────────┐
-│  Browser (JWT stored in localStorage)        │
-└──────────────────────────────────────────────┘
-                      │
-                      │ GET /api/v1/dashboard
-                      │ Authorization: Bearer eyJhbG...
-                      ▼
-         ┌──────────────────────────────┐
-         │  API Server                  │
-         │                              │
-         │  1. Extract token from header
-         │  2. Verify JWT signature
-         │  3. Check token expiration
-         │  4. Validate user role
-         │  5. Check endpoint permission
-         └──────────────────────────────┘
-                      │
-                      ▼
-         ┌──────────────────────────────┐
-         │  ✓ Access Granted            │
-         │  Return dashboard data       │
-         │                              │
-         │  OR                          │
-         │                              │
-         │  ✗ Access Denied             │
-         │  Return 401/403 error        │
-         └──────────────────────────────┘
-```
-
-### JWT Token Structure
-
-```json
-{
-  "header": {
-    "alg": "HS256",
-    "typ": "JWT"
-  },
-  "payload": {
-    "sub": "user-id-uuid",
-    "email": "user@example.com",
-    "role": "ANALYST",
-    "iat": 1712659200,
-    "exp": 1712745600
-  },
-  "signature": "HMACSHA256(header.payload, secret)"
-}
-```
-
-### Permission Matrix
-
-| Endpoint | VIEWER | ANALYST | ADMIN | Description |
-|----------|--------|---------|-------|-------------|
-| `GET /dashboard/*` | ✓ | ✓ | ✓ | View dashboard (all can see) |
-| `GET /records` | ✗ | ✓ | ✓ | List financial records |
-| `POST /records` | ✗ | ✗ | ✓ | Create financial record |
-| `PATCH /records/:id` | ✗ | ✗ | ✓ | Edit financial record |
-| `DELETE /records/:id` | ✗ | ✗ | ✓ | Delete financial record |
-| `GET /users` | ✗ | ✗ | ✓ | List users |
-| `GET /users/:id` | ✗ | ✗ | ✓ | View user details |
-| `PATCH /users/:id/role` | ✗ | ✗ | ✓ | Change user role |
-| `PATCH /users/:id/status` | ✗ | ✗ | ✓ | Deactivate/activate user |
+### Developer Experience
+- TypeScript (Full type safety)
+- Modular Architecture (Domain-driven)
+- Easy Setup (npm run setup)
+- Documentation (README files)
+- Local Development (Hot reload)
+- Error Tracking (Detailed logging)
 
 ---
 
