@@ -60,6 +60,54 @@ flowchart TD
 11. [Project Structure](#-project-structure)
 
 ---
+## 💻 Technology Stack
+
+### Backend Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Runtime** | Node.js 18+ | JavaScript runtime |
+| **Language** | TypeScript | Type-safe backend code |
+| **Framework** | Express.js | Lightweight HTTP server |
+| **Database** | PostgreSQL | Relational data storage |
+| **ORM** | Prisma | Type-safe database access |
+| **Authentication** | JWT (HS256) | Stateless auth tokens |
+| **Validation** | Custom Layer | Runtime type validation |
+| **Testing** | Jest + Supertest | Unit & integration tests |
+| **Deployment** | Render | Node.js hosting platform |
+
+### Frontend Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Runtime** | Modern Browser | Chrome, Firefox, Safari |
+| **Build Tool** | Vite | Fast development & production builds |
+| **Framework** | React 18 | UI component library |
+| **Styling** | Tailwind CSS | Utility-first CSS framework |
+| **Routing** | Custom Hash Router | SPA routing for static hosting |
+| **State** | React Context | Client-side state management |
+| **HTTP Client** | Fetch API | REST API calls |
+| **Deployment** | Netlify | Static hosting with auto-deploy |
+
+### Testing Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Test Runner** | Playwright | End-to-end browser automation |
+| **Browsers** | Chromium, Firefox, WebKit | Cross-browser testing |
+| **Deployment Testing** | Production URLs | Real environment validation |
+| **Coverage** | 58+ Tests | Auth, RBAC, Features, API, Mobile |
+
+### Cloud Infrastructure
+
+| Service | Provider | Purpose |
+|---------|----------|---------|
+| **Frontend Hosting** | Netlify | Static SPA hosting + CI/CD |
+| **Backend Hosting** | Render | Node.js API server |
+| **Database** | Supabase | Managed PostgreSQL + backups |
+
+
+---
 
 ## 🏗️ System Architecture
 
@@ -243,54 +291,6 @@ ADMIN (Full Access)
 - **Validated Production Deployment**: Live URLs tested
 - **All 3 Demo Accounts Verified**: Viewer, Analyst, Admin (working)
 - **Test Results**: ✅ **42/58 tests passing (72% success rate)**
-
----
-
-## 💻 Technology Stack
-
-### Backend Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Runtime** | Node.js 18+ | JavaScript runtime |
-| **Language** | TypeScript | Type-safe backend code |
-| **Framework** | Express.js | Lightweight HTTP server |
-| **Database** | PostgreSQL | Relational data storage |
-| **ORM** | Prisma | Type-safe database access |
-| **Authentication** | JWT (HS256) | Stateless auth tokens |
-| **Validation** | Custom Layer | Runtime type validation |
-| **Testing** | Jest + Supertest | Unit & integration tests |
-| **Deployment** | Render | Node.js hosting platform |
-
-### Frontend Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Runtime** | Modern Browser | Chrome, Firefox, Safari |
-| **Build Tool** | Vite | Fast development & production builds |
-| **Framework** | React 18 | UI component library |
-| **Styling** | Tailwind CSS | Utility-first CSS framework |
-| **Routing** | Custom Hash Router | SPA routing for static hosting |
-| **State** | React Context | Client-side state management |
-| **HTTP Client** | Fetch API | REST API calls |
-| **Deployment** | Netlify | Static hosting with auto-deploy |
-
-### Testing Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Test Runner** | Playwright | End-to-end browser automation |
-| **Browsers** | Chromium, Firefox, WebKit | Cross-browser testing |
-| **Deployment Testing** | Production URLs | Real environment validation |
-| **Coverage** | 58+ Tests | Auth, RBAC, Features, API, Mobile |
-
-### Cloud Infrastructure
-
-| Service | Provider | Purpose |
-|---------|----------|---------|
-| **Frontend Hosting** | Netlify | Static SPA hosting + CI/CD |
-| **Backend Hosting** | Render | Node.js API server |
-| **Database** | Supabase | Managed PostgreSQL + backups |
 
 ---
 
