@@ -11,4 +11,4 @@ export { corsMiddleware } from './cors.js';
 export { requestLogger } from './request-logger.js';
 export { notFoundHandler } from './not-found-handler.js';
 export { errorHandler } from './error-handler.js';
-export { globalRateLimiter, loginRateLimiter, dashboardReadRateLimiter } from './rate-limiter.js';
+export { globalRateLimiter, loginRateLimiter, signupRateLimiter, dashboardReadRateLimiter } from './rate-limiter.js';

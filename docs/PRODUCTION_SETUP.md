@@ -21,7 +21,7 @@ cd backend
 
 # Set production DATABASE_URL
 $env:DATABASE_URL="postgresql://postgres.wdwlijnkisqlnuwmoidh:FfDtBgqIYVh6wm66@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require"
-$env:DIRECT_URL="postgresql://postgres:FfDtBgqIYVh6wm66@db.wdwlijnkisqlnuwmoidh.supabase.co:5432/postgres?sslmode=require"
+$env:DIRECT_URL="postgresql://postgres.wdwlijnkisqlnuwmoidh:FfDtBgqIYVh6wm66@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require"
 
 # Apply schema (creates enums, tables, indexes)
 npx prisma db push --skip-generate
@@ -163,7 +163,7 @@ Check the debug logs on Render:
 
 1. Go to **Render Dashboard** → `finance-dashboard-api` → **Logs**
 2. Look for: `DATABASE_URL_RUNTIME: postgresql://...`
-3. Verify it ends with `:6543/postgres?sslmode=require` (Transaction Pooler, not direct connection)
+3. Verify `DATABASE_URL` ends with `:6543/postgres?sslmode=require` and `DIRECT_URL` ends with `:5432/postgres?sslmode=require`
 4. If connection string is wrong, update in Render Settings → Environment
 
 ---
@@ -172,13 +172,14 @@ Check the debug logs on Render:
 
 **For Render (Production)**:
 - **Host**: `aws-1-ap-northeast-2.pooler.supabase.com`
-- **Port**: `6543` (Transaction Pooler)
+- **Port**: `6543` (Transaction Pooler for runtime `DATABASE_URL`)
 - **Database**: `postgres`
 - **SSL**: Required (`sslmode=require`)
 
 **For Local Development**:
 - **Host**: `localhost`
-- **Port**: `5432`
+- **Host**: `aws-1-ap-northeast-2.pooler.supabase.com`
+- **Port**: `5432` (Session Pooler for `DIRECT_URL`)
 - **Database**: `finance_dashboard_dev`
 - **SSL**: Not required
 
@@ -273,6 +274,7 @@ npm install --include=dev && npx prisma db push --skip-generate && npm run build
 Ensure set in Render dashboard:
 ```
 DATABASE_URL = postgresql://postgres.wdwlijnkisqlnuwmoidh:FfDtBgqIYVh6wm66@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require
+DIRECT_URL = postgresql://postgres.wdwlijnkisqlnuwmoidh:FfDtBgqIYVh6wm66@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require
 JWT_SECRET = [your jwt secret]
 NODE_ENV = production
 CORS_ORIGIN = https://finance-dashboard-pro.netlify.app

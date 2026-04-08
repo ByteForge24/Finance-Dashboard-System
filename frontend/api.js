@@ -34,6 +34,7 @@ async function request(method, path, body = null, query = null) {
 
 // Auth
 export const login = (email, password) => request('POST', '/auth/login', { email, password });
+export const signup = (name, email, password) => request('POST', '/auth/signup', { name, email, password });
 export const getMe = () => request('GET', '/auth/me');
 
 // Dashboard

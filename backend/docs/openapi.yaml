@@ -433,8 +433,16 @@ paths:
     post:
       tags:
         - Authentication
-      summary: Login with email and password
-      description: Authenticate a user and receive a JWT token. Inactive users cannot login.
+      summary: Login with email and password (Demo access or existing user)
+      description: |
+        Authenticate a user and receive a JWT token. Supports both demo accounts and user-created accounts.
+        
+        **Demo Access**: Use demo account credentials to test features immediately without creating an account.
+        
+        **Error Messages** (Phase 4 Refinement):
+        - "User not found. Please sign up first." → User email doesn't exist
+        - "Incorrect password. Please try again." → Password incorrect
+        - "Account is inactive. Contact support." → User exists but inactive
       requestBody:
         required: true
         content:
@@ -450,9 +458,15 @@ paths:
               required:
                 - email
                 - password
-            example:
-              email: admin@finance-dashboard.local
-              password: AdminPassword123
+            examples:
+              adminDemo:
+                value:
+                  email: admin@finance-dashboard.local
+                  password: AdminPassword123
+              userAccount:
+                value:
+                  email: john@example.com
+                  password: UserPassword123
       responses:
         200:
           description: Login successful
@@ -465,6 +479,7 @@ paths:
                     $ref: '#/components/schemas/User'
                   token:
                     type: string
+                    description: JWT token for authenticating future requests
               example:
                 user:
                   id: 550e8400-e29b-41d4-a716-446655440000
@@ -476,7 +491,7 @@ paths:
                   updatedAt: 2026-04-05T10:30:00Z
                 token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         400:
-          description: Validation error
+          description: Validation error (missing or invalid email/password)
           content:
             application/json:
               schema:
@@ -488,26 +503,162 @@ paths:
                   - field: email
                     issue: must be a valid email
         401:
-          description: Invalid credentials or inactive user
+          description: Unauthorized - differentiated error messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                userNotFound:
+                  value:
+                    error: UnauthorizedError
+                    message: User not found. Please sign up first.
+                wrongPassword:
+                  value:
+                    error: UnauthorizedError
+                    message: Incorrect password. Please try again.
+                inactiveUser:
+                  value:
+                    error: UnauthorizedError
+                    message: Account is inactive. Contact support.
+        429:
+          description: Too many login attempts (rate limited)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
-                error: UnauthorizedError
-                message: Invalid email or password
+                error: TooManyRequestsError
+                message: Too many login attempts, please try again after 15 minutes.
+
+  /auth/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Create a new user account (User registration)
+      description: |
+        Register a new user account. New users are assigned VIEWER role and ACTIVE status by default.
+        
+        **Key Behaviors**:
+        - Email normalized to lowercase
+        - Password hashed with bcryptjs (10 rounds)
+        - Default role: VIEWER (cannot be overridden at signup)
+        - Default status: ACTIVE (can login immediately)
+        - Returns JWT token for auto-login
+        - Demo email addresses are reserved and cannot be registered
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: User's full name
+                  minLength: 1
+                email:
+                  type: string
+                  format: email
+                  description: User's email (normalized to lowercase)
+                password:
+                  type: string
+                  description: Password (minimum 8 characters)
+                  minLength: 8
+              required:
+                - name
+                - email
+                - password
+            example:
+              name: John Doe
+              email: john@example.com
+              password: SecurePassword123
+      responses:
+        201:
+          description: User created successfully (new account with auto-login token)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                    description: Created user (always with role=VIEWER, status=ACTIVE)
+                  token:
+                    type: string
+                    description: JWT token for immediate authentication (auto-login)
+              example:
+                user:
+                  id: 550e8400-e29b-41d4-a716-446655440001
+                  name: John Doe
+                  email: john@example.com
+                  role: VIEWER
+                  status: ACTIVE
+                  createdAt: 2026-04-07T12:00:00Z
+                  updatedAt: 2026-04-07T12:00:00Z
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        400:
+          description: Validation error (invalid input)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                missingFields:
+                  value:
+                    error: ValidationError
+                    message: Request validation failed
+                    details:
+                      - field: name
+                        issue: required
+                      - field: email
+                        issue: required
+                invalidPassword:
+                  value:
+                    error: ValidationError
+                    message: Request validation failed
+                    details:
+                      - field: password
+                        issue: must be at least 8 characters
+        409:
+          description: Conflict - email already exists or reserved for demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                duplicateEmail:
+                  value:
+                    error: ConflictError
+                    message: Email address is already in use
+                reservedDemoEmail:
+                  value:
+                    error: ConflictError
+                    message: This email address is reserved for demo access
+        429:
+          description: Too many signup attempts (rate limited)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: TooManyRequestsError
+                message: Too many signup attempts, please try again after 1 hour.
 
   /auth/me:
     get:
       tags:
         - Authentication
       summary: Get current authenticated user
-      description: Returns the authenticated user's profile information
+      description: |
+        Returns the authenticated user's profile information who is identified by the JWT token.
+        
+        Used after login/signup to fetch user details or verify token validity.
       security:
         - bearerAuth: []
       responses:
         200:
-          description: Current user information
+          description: Current user information retrieved successfully
           content:
             application/json:
               schema:
@@ -521,14 +672,20 @@ paths:
                 createdAt: 2026-01-01T00:00:00Z
                 updatedAt: 2026-04-05T10:30:00Z
         401:
-          description: Missing or invalid token
+          description: Unauthorized - missing or invalid token
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: UnauthorizedError
-                message: Authentication required
+              examples:
+                missingToken:
+                  value:
+                    error: UnauthorizedError
+                    message: Authentication required
+                invalidToken:
+                  value:
+                    error: UnauthorizedError
+                    message: Invalid or expired token
 
   /users:
     post:

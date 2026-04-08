@@ -3,6 +3,9 @@ import { generateToken } from '../../src/modules/auth/auth.token.js';
 import { Role } from '../../src/shared/domain/role.js';
 
 describe('Auth Module', () => {
+  // Generate unique suffix for test emails to avoid conflicts across test runs
+  const testSuffix = Date.now();
+
   describe('POST /api/v1/auth/login - Login Success', () => {
     it('should login successfully with valid admin credentials', async () => {
       const response = await testApp()
@@ -39,7 +42,7 @@ describe('Auth Module', () => {
   });
 
   describe('POST /api/v1/auth/login - Login Failure', () => {
-    it('should fail login with invalid password', async () => {
+    it('should fail login with invalid password (differentiated error)', async () => {
       const response = await testApp()
         .post('/api/v1/auth/login')
         .send({
@@ -50,10 +53,10 @@ describe('Auth Module', () => {
 
       expect(response.body).toHaveProperty('error');
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toContain('Invalid email or password');
+      expect(response.body.message).toBe('Incorrect password. Please try again.');
     });
 
-    it('should fail login with unknown email', async () => {
+    it('should fail login with unknown email (differentiated error)', async () => {
       const response = await testApp()
         .post('/api/v1/auth/login')
         .send({
@@ -64,12 +67,12 @@ describe('Auth Module', () => {
 
       expect(response.body).toHaveProperty('error');
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toContain('Invalid email or password');
+      expect(response.body.message).toBe('User not found. Please sign up first.');
     });
   });
 
   describe('POST /api/v1/auth/login - Inactive User Denied', () => {
-    it('should deny login for inactive user', async () => {
+    it('should deny login for inactive user (differentiated error)', async () => {
       const response = await testApp()
         .post('/api/v1/auth/login')
         .send({
@@ -80,7 +83,7 @@ describe('Auth Module', () => {
 
       expect(response.body).toHaveProperty('error');
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toContain('User account is inactive');
+      expect(response.body.message).toBe('Account is inactive. Contact support.');
     });
   });
 
@@ -164,6 +167,229 @@ describe('Auth Module', () => {
 
       expect(response.body).toHaveProperty('error');
       expect(response.body).toHaveProperty('message');
+    });
+  });
+
+  describe('POST /api/v1/auth/signup - Signup Success', () => {
+    it('should signup successfully with valid credentials', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'New User',
+          email: `newuser-${testSuffix}@example.com`,
+          password: 'NewSecurePassword123',
+        })
+        .expect(201);
+
+      expect(response.body).toHaveProperty('user');
+      expect(response.body).toHaveProperty('token');
+      expect(response.body.user).toHaveProperty('email', `newuser-${testSuffix}@example.com`);
+      expect(response.body.user).toHaveProperty('name', 'New User');
+      expect(response.body.user).toHaveProperty('role', 'viewer');
+      expect(response.body.user).toHaveProperty('status', 'active');
+      expect(response.body.user).not.toHaveProperty('passwordHash');
+      expect(typeof response.body.token).toBe('string');
+      expect(response.body.token.length).toBeGreaterThan(0);
+    });
+
+    it('should assign VIEWER role by default on signup', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Viewer Default User',
+          email: `viewerdefault-${testSuffix}@example.com`,
+          password: 'SecurePassword123',
+        })
+        .expect(201);
+
+      expect(response.body.user.role).toBe('viewer');
+    });
+
+    it('should create user with ACTIVE status by default', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Active Status User',
+          email: `activestatus-${testSuffix}@example.com`,
+          password: 'SecurePassword123',
+        })
+        .expect(201);
+
+      expect(response.body.user.status).toBe('active');
+    });
+
+    it('should normalize email to lowercase on signup', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Email Case Test',
+          email: `TestEmail-${testSuffix}@EXAMPLE.COM`,
+          password: 'SecurePassword123',
+        })
+        .expect(201);
+
+      expect(response.body.user.email).toBe(`testemail-${testSuffix}@example.com`);
+    });
+  });
+
+  describe('POST /api/v1/auth/signup - Duplicate Email', () => {
+    it('should return 409 when signup email already exists', async () => {
+      const email = `duplicate-test-${testSuffix}@example.com`;
+      // First, create a user
+      await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Original User',
+          email,
+          password: 'SecurePassword123',
+        })
+        .expect(201);
+
+      // Then try to signup with same email
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Duplicate Attempt',
+          email,
+          password: 'SecurePassword123',
+        })
+        .expect(409);
+
+      expect(response.body).toHaveProperty('error');
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('Email address is already in use');
+    });
+  });
+
+  describe('POST /api/v1/auth/signup - Reserved Demo Email', () => {
+    it('should reject signup with reserved VIEWER demo email', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Viewer Demo',
+          email: 'viewer@finance-dashboard.local',
+          password: 'SecurePassword123',
+        })
+        .expect(409);
+
+      expect(response.body).toHaveProperty('error');
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('This email address is reserved for demo access');
+    });
+
+    it('should reject signup with reserved ANALYST demo email', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Analyst Demo',
+          email: 'analyst@finance-dashboard.local',
+          password: 'SecurePassword123',
+        })
+        .expect(409);
+
+      expect(response.body).toHaveProperty('error');
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('This email address is reserved for demo access');
+    });
+
+    it('should reject signup with reserved ADMIN demo email', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Admin Demo',
+          email: 'admin@finance-dashboard.local',
+          password: 'SecurePassword123',
+        })
+        .expect(409);
+
+      expect(response.body).toHaveProperty('error');
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('This email address is reserved for demo access');
+    });
+
+    it('should reject signup with reserved INACTIVE demo email', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Inactive Demo',
+          email: 'inactive@finance-dashboard.local',
+          password: 'SecurePassword123',
+        })
+        .expect(409);
+
+      expect(response.body).toHaveProperty('error');
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('This email address is reserved for demo access');
+    });
+  });
+
+  describe('POST /api/v1/auth/signup - Validation', () => {
+    it('should fail signup with missing name', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          email: `test-${testSuffix}@example.com`,
+          password: 'SecurePassword123',
+        })
+        .expect(400);
+
+      expect(response.body).toHaveProperty('error');
+      expect(response.body).toHaveProperty('message');
+      expect(response.body).toHaveProperty('details');
+    });
+
+    it('should fail signup with invalid email format', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Test User',
+          email: 'invalid-email',
+          password: 'SecurePassword123',
+        })
+        .expect(400);
+
+      expect(response.body).toHaveProperty('error');
+      expect(response.body).toHaveProperty('message');
+      expect(response.body).toHaveProperty('details');
+    });
+
+    it('should fail signup with password too short', async () => {
+      const response = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Test User',
+          email: `test2-${testSuffix}@example.com`,
+          password: 'short',
+        })
+        .expect(400);
+
+      expect(response.body).toHaveProperty('error');
+      expect(response.body).toHaveProperty('message');
+      expect(response.body).toHaveProperty('details');
+    });
+  });
+
+  describe('POST /api/v1/auth/signup - Auto-Login After Signup', () => {
+    it('should return valid token that works with /auth/me', async () => {
+      const signupResponse = await testApp()
+        .post('/api/v1/auth/signup')
+        .send({
+          name: 'Token Test User',
+          email: `tokentest-${testSuffix}@example.com`,
+          password: 'SecurePassword123',
+        })
+        .expect(201);
+
+      const token = signupResponse.body.token;
+
+      const meResponse = await testApp()
+        .get('/api/v1/auth/me')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      expect(meResponse.body).toHaveProperty('email', `tokentest-${testSuffix}@example.com`);
+      expect(meResponse.body).toHaveProperty('name', 'Token Test User');
+      expect(meResponse.body).toHaveProperty('role', 'viewer');
     });
   });
 
