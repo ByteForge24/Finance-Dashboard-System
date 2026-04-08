@@ -5,7 +5,6 @@
  <p align="center">
   <a href="https://finance-dashboard-pro.netlify.app"><img src="https://img.shields.io/badge/Live%20Demo-00C7FD?style=for-the-badge&logo=netlify&logoColor=white" /></a>
   <a href="https://finance-dashboard-api-hqjk.onrender.com/health"><img src="https://img.shields.io/badge/API%20Server-46E3B7?style=for-the-badge&logo=render&logoColor=white" /></a>
-  <a href="https://github.com/ByteForge24/Finance-Dashboard-System"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" /></a>
 </p>
 
 <p align="center">
