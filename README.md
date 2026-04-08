@@ -1,5 +1,8 @@
 # 💰 Financial Dashboard System
 
+**A production-ready full-stack financial management platform with role-based access control, comprehensive testing, and cloud deployment.**  
+**Features hybrid authentication, soft-delete records, 20+ REST APIs, and responsive React SPA—deployed live on Netlify, Render, and Supabase.**
+
 > **A Full-Stack Production Financial Management Application**  
 > Backend API + Frontend SPA + E2E Testing Suite + Production Deployment
 
