@@ -2,15 +2,14 @@
 
 > A financial management platform to track income, expenses, and analyze spending patterns with role-based access control, supported by secure and structured APIs for managing financial data and insights.
 
-**Key Highlights:**
-- 🔐 **Hybrid Authentication** — Demo access, user signup, and secure JWT-based login with rate limiting
-- 👥 **Role-Based Access Control** — 3-tier permission system (VIEWER, ANALYST, ADMIN) enforced across all operations
-- 📊 **Advanced Analytics** — Dashboard with financial summaries, trends, category breakdown, and AI insights
-- ✅ **Comprehensive Testing** — 58 Playwright E2E tests with 72% coverage, all critical paths verified
-- 🚀 **Production Deployed** — Live on Netlify (frontend), Render (backend), Supabase (database)
-- 🛡️ **Enterprise Security** — Soft-delete pattern, input validation, CORS protection, RBAC enforcement
+ <p align="center">
+  <a href="https://finance-dashboard-pro.netlify.app"><img src="https://img.shields.io/badge/Live%20Demo-000?style=for-the-badge&logo=netlify&logoColor=white" /></a>
+  <a href="https://finance-dashboard-api-hqjk.onrender.com/health"><img src="https://img.shields.io/badge/API%20Server-4351e8?style=for-the-badge&logo=render&logoColor=white" /></a>
+</p>
 
-**Tech Stack:** TypeScript • React • Express • PostgreSQL • Prisma • JWT • Tailwind CSS • Playwright
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=react,ts,tailwind,nodejs,express,postgres,docker&theme=dark" />
+</p>
 
 ---
 
@@ -91,192 +90,6 @@ Admin-only interface for managing user accounts, roles, permissions, and user li
 ![Users Page](./screenshots/05-users-page.png)
 
 ---
-
-## 🏗️ System Architecture
-
-### High-Level System Design
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           FINANCE DASHBOARD SYSTEM                       │
-└─────────────────────────────────────────────────────────────────────────┘
-
-┌──────────────────────────┐        ┌──────────────────────────────────┐
-│   FRONTEND (Client)      │        │   BACKEND (API Server)           │
-│  Netlify (SPA)           │        │   Render (Node.js/Express)       │
-│                          │        │                                  │
-│  - React/Vite ──────────────────▶ - JWT Authentication              │
-│  - Hash Routing          │ HTTPS  │ - Role-Based Access Control      │
-│  - Responsive UI         │        │ - Financial Record Management    │
-│  - Dark Mode             │       │ - Dashboard Analytics            │
-│                          │        │ - User Management               │
-└──────────────────────────┘        └──────────────────────────────────┘
-          △                                       △
-          │                                       │
-          └───────────────────────────────────────┘
-                         POSTGRESQL
-                    (Supabase Database)
-                    
-                    - Users Table
-                    - Records Table
-                    - Soft Delete Support
-                    - Data Integrity
-```
-
-### Data Flow Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      REQUEST/RESPONSE CYCLE                             │
-└─────────────────────────────────────────────────────────────────────────┘
-
-1. USER INTERACTION (Frontend)
-   │
-   └──▶ Event: Login / View Dashboard / Create Record
-        │
-        └──▶ HTTP Request (with JWT Token in Header)
-
-2. API PROCESSING (Backend)
-   │
-   ├──▶ Authentication Middleware
-   │    └─ Verify JWT Token
-   │       ├─ Valid? Continue
-   │       └─ Invalid? Return 401 Unauthorized
-   │
-   ├──▶ Authorization Middleware
-   │    └─ Check User Role (VIEWER/ANALYST/ADMIN)
-   │       ├─ Has Permission? Continue
-   │       └─ No Permission? Return 403 Forbidden
-   │
-   ├──▶ Route Handler
-   │    ├─ Validate Request Data
-   │    ├─ Query Database
-   │    ├─ Apply Business Logic
-   │    └─ Return Response
-
-3. DATA PERSISTENCE (PostgreSQL)
-   │
-   ├──▶ Prisma ORM
-   │    ├─ Type-Safe Queries
-   │    └─ Automatic Validation
-   │
-   └──▶ Database
-        ├─ Users
-        ├─ Records
-        └─ Constraints & Indexes
-
-4. RESPONSE (Frontend)
-   │
-   └──▶ Display Results / Update UI / Show Errors
-```
-
-### Role-Based Access Control Model
-
-```
-┌──────────────────────────────────────────────────────────┐
-│              ROLE HIERARCHY & PERMISSIONS                │
-└──────────────────────────────────────────────────────────┘
-
-VIEWER (Read-Only Dashboard Access)
-├─ Can: View dashboard summary
-├─ Can: View own profile
-├─ Cannot: Access records
-├─ Cannot: Manage users
-└─ Greatest Restriction ↓
-
-ANALYST (Dashboard + Read-Only Records)
-├─ Can: View dashboard summary
-├─ Can: View all financial records (read-only)
-├─ Can: Filter & search records
-├─ Can: View category breakdown
-├─ Can: View trends
-├─ Cannot: Create/edit/delete records
-├─ Cannot: Manage users
-└─ Medium Restriction ↓
-
-ADMIN (Full Access)
-├─ Can: View everything
-├─ Can: Create/edit/delete financial records
-├─ Can: Manage user roles and status
-├─ Can: View user list and profiles
-├─ Can: Perform all operations
-└─ No Restrictions ✓
-```
-
----
-
-## 🚀 Project Journey
-
-### 9 Major Phases - From Concept to Production
-
-#### **Phase 1-2**: Foundation & Planning
-- Defined project requirements and success criteria
-- Designed database schema (Users, Records)
-- Planned API specification with OpenAPI
-- Designed role-based access control model
-
-#### **Phase 3**: Backend API Development
-- Implemented Express server with TypeScript
-- Created authentication module (JWT-based)
-- Built user management endpoints
-- Implemented financial records CRUD operations
-- Added dashboard analytics endpoints (summary, trending, insights, categories)
-- Integrated Prisma ORM with PostgreSQL
-- Implemented soft-delete pattern for financial records
-
-#### **Phase 4**: Validation & Error Handling
-- Created centralized validation layer with typed validators
-- Implemented error handling middleware
-- Added request sanitization
-- Established consistent error response format
-
-#### **Phase 5**: Role-Based Access Control (RBAC)
-- Implemented permission checks for all endpoints
-- Created role-based middleware
-- Tested RBAC enforcement across all operations
-- Added authorization error responses (403 Forbidden)
-
-#### **Phase 6**: Testing & Quality Assurance
-- Implemented unit tests with Jest
-- Added integration tests with Supertest
-- Achieved >80% code coverage
-- Added smoke tests for critical paths
-
-#### **Phase 7**: Hybrid Authentication System
-- **Implemented Demo Access** for immediate evaluation
-- Created user signup functionality with default VIEWER role
-- Added differentiated login error messages (no username enumeration)
-- Reserved demo emails to prevent account takeover
-- Implemented rate limiting (5 login/15min, 10 signup/1hr)
-- Token refresh mechanism for session extension
-
-#### **Phase 8**: Frontend Implementation
-- Built React SPA with Vite
-- Implemented client-side routing (hash-based for Netlify)
-- Created multi-role UI (different views for each role)
-- Built responsive design with Tailwind CSS
-- Implemented dark mode support
-- Added form validation and error handling
-- Integrated JWT authentication
-
-#### **Phase 9**: Production Deployment & E2E Testing
-- **Deployed Frontend**: Netlify (automatic CI/CD from Git)
-- **Deployed Backend API**: Render (Node.js dyno, auto-deploys)
-- **Database**: Supabase PostgreSQL (managed PostgreSQL)
-- **Created Comprehensive E2E Test Suite**: Playwright
-  - 11+ sign-in tests (all auth flows)
-  - 7+ dashboard feature tests
-  - 10+ records management tests
-  - 5+ API security tests
-  - Backend lifecycle tests
-  - Mobile responsiveness tests
-  - **Total: 58+ E2E tests, 72%+ coverage, 100% critical path verification**
-- **Validated Production Deployment**: Live URLs tested
-- **All 3 Demo Accounts Verified**: Viewer, Analyst, Admin (working)
-- **Test Results**: ✅ **42/58 tests passing (72% success rate)**
-
----
-
 ## 💻 Technology Stack
 
 ### Backend Stack
@@ -287,33 +100,16 @@ ADMIN (Full Access)
 | **Language** | TypeScript | Type-safe backend code |
 | **Framework** | Express.js | Lightweight HTTP server |
 | **Database** | PostgreSQL | Relational data storage |
-| **ORM** | Prisma | Type-safe database access |
 | **Authentication** | JWT (HS256) | Stateless auth tokens |
-| **Validation** | Custom Layer | Runtime type validation |
-| **Testing** | Jest + Supertest | Unit & integration tests |
 | **Deployment** | Render | Node.js hosting platform |
 
 ### Frontend Stack
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
-| **Runtime** | Modern Browser | Chrome, Firefox, Safari |
-| **Build Tool** | Vite | Fast development & production builds |
-| **Framework** | React 18 | UI component library |
 | **Styling** | Tailwind CSS | Utility-first CSS framework |
-| **Routing** | Custom Hash Router | SPA routing for static hosting |
-| **State** | React Context | Client-side state management |
 | **HTTP Client** | Fetch API | REST API calls |
 | **Deployment** | Netlify | Static hosting with auto-deploy |
-
-### Testing Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Test Runner** | Playwright | End-to-end browser automation |
-| **Browsers** | Chromium, Firefox, WebKit | Cross-browser testing |
-| **Deployment Testing** | Production URLs | Real environment validation |
-| **Coverage** | 58+ Tests | Auth, RBAC, Features, API, Mobile |
 
 ### Cloud Infrastructure
 
@@ -323,154 +119,130 @@ ADMIN (Full Access)
 | **Backend Hosting** | Render | Node.js API server |
 | **Database** | Supabase | Managed PostgreSQL + backups |
 
+
 ---
 
-## 🔐 Authentication & Authorization
+## 🚀 Getting Started
 
-### Hybrid Authentication System
+### Quick Links
+- **Live Demo**: [https://finance-dashboard-pro.netlify.app](https://finance-dashboard-pro.netlify.app)
+- **API Server**: [https://finance-dashboard-api-hqjk.onrender.com](https://finance-dashboard-api-hqjk.onrender.com)
+- **GitHub Repo**: [https://github.com/ByteForge24/Finance-Dashboard-System](https://github.com/ByteForge24/Finance-Dashboard-System)
 
-The system implements a sophisticated hybrid authentication approach that balances security with user experience:
+### Demo Accounts (No Signup Required)
 
-#### 1. **Demo Access (Fast Track)**
+| Role | Email | Password |
+|------|-------|----------|
+| **Viewer** | `viewer@finance-dashboard.local` | `ViewerPassword123` |
+| **Analyst** | `analyst@finance-dashboard.local` | `AnalystPassword123` |
+| **Admin** | `admin@finance-dashboard.local` | `AdminPassword123` |
 
-```
-EVALUATOR
-   │
-   ├─▶ Click "Demo - Viewer" Button
-   │   └─ Instant Login (pre-filled credentials)
-   │      └─ Redirected to Dashboard
-   │
-   ├─▶ Click "Demo - Analyst" Button
-   │   └─ Instant Login
-   │      └─ Dashboard + Records Access
-   │
-   └─▶ Click "Demo - Admin" Button
-       └─ Instant Login
-          └─ Full System Access
-          
-BENEFITS:
-✓ No signup friction
-✓ Immediate access to all features
-✓ Safe (pre-registered demo accounts)
-✓ Rate-limited (5 logins per 15 minutes)
-```
+### Local Development
 
-#### 2. **User Signup (New Accounts)**
+```bash
+# Clone repository
+git clone https://github.com/ByteForge24/Finance-Dashboard-System.git
+cd Finance-Dashboard-System
 
-```
-NEW USER
-   │
-   ├─▶ Click "Sign Up" Tab
-   │   │
-   │   ├─ Enter email + password
-   │   ├─ Submit form
-   │   │
-   │   ├─ Validation: Email format, password strength
-   │   ├─ Check: Email not already registered
-   │   │       Email not in reserved demo list
-   │   │
-   │   └─▶ Create account
-   │       ├─ Hash password (bcrypt)
-   │       ├─ Assign default VIEWER role
-   │       ├─ Create database record
-   │       └─ Return auth token (JWT)
-   │
-   └─▶ Automatically redirected to dashboard
-   
-RATE LIMITING: 10 signup requests per hour
-```
+# Backend setup
+cd backend
+npm run setup
+npm run dev  # Runs on http://localhost:3000
 
-#### 3. **User Login (Existing Accounts)**
+# Frontend setup (in new terminal)
+cd ../frontend
+npm install
+npm run dev  # Runs on http://localhost:5173
+
+# Run E2E Tests
+cd ../tests
+npm install
+npx playwright install --with-deps
+npx playwright test --headed
 
 ```
-EXISTING USER
-   │
-   ├─▶ Click "Sign In" Tab
-   │   │
-   │   ├─ Enter email + password
-   │   ├─ Submit form
-   │   │
-   │   ├─ Check: Account exists
-   │   ├─ Verify: Password matches (bcrypt)
-   │   ├─ Check: Account status is ACTIVE
-   │   │
-   │   ├─ On Success:
-   │   │  └─ Generate JWT token (expires in 24 hours)
-   │   │     └─ Return token to client
-   │   │     └─ Redirect to dashboard
-   │   │
-   │   └─ On Failure:
-   │      └─ Return generic error (no username enumeration)
-   │         "Invalid email or password"
-   │
-   └─▶ Rate Limiting: 5 login attempts per 15 minutes
-```
 
-#### 4. **Token Flow**
+---
 
-```
-REQUEST FLOW:
-┌──────────────────────────────────────────────┐
-│  Browser (JWT stored in localStorage)        │
-└──────────────────────────────────────────────┘
-                      │
-                      │ GET /api/v1/dashboard
-                      │ Authorization: Bearer eyJhbG...
-                      ▼
-         ┌──────────────────────────────┐
-         │  API Server                  │
-         │                              │
-         │  1. Extract token from header
-         │  2. Verify JWT signature
-         │  3. Check token expiration
-         │  4. Validate user role
-         │  5. Check endpoint permission
-         └──────────────────────────────┘
-                      │
-                      ▼
-         ┌──────────────────────────────┐
-         │  ✓ Access Granted            │
-         │  Return dashboard data       │
-         │                              │
-         │  OR                          │
-         │                              │
-         │  ✗ Access Denied             │
-         │  Return 401/403 error        │
-         └──────────────────────────────┘
-```
+## ✨ Core Features
 
-### JWT Token Structure
+### Authentication & Security
+- Hybrid Authentication (Demo access, user signup, secure login)
+- JWT Token-Based Auth (HS256 encryption, 24-hour expiration)
+- Rate Limiting (5 login attempts per 15 minutes, 10 signups per hour)
+- Password Security (bcrypt hashing)
+- Session Management (localStorage-based token persistence)
+- No Username Enumeration (generic error messages)
 
-```json
-{
-  "header": {
-    "alg": "HS256",
-    "typ": "JWT"
-  },
-  "payload": {
-    "sub": "user-id-uuid",
-    "email": "user@example.com",
-    "role": "ANALYST",
-    "iat": 1712659200,
-    "exp": 1712745600
-  },
-  "signature": "HMACSHA256(header.payload, secret)"
-}
-```
+### Role-Based Access Control
+- VIEWER Role (Dashboard-only access, read-only)
+- ANALYST Role (Dashboard + read-only financial records)
+- ADMIN Role (Full system access with create, edit, delete)
+- Permission Enforcement (RBAC checks on all endpoints)
+- Role Management (Dynamic role assignment)
 
-### Permission Matrix
+### Financial Record Management
+- Create Records (Add income & expense transactions)
+- View Records (Paginated list with filters)
+- Edit Records (Update transaction details)
+- Soft Delete (Logical deletion with data retention)
+- Categories (Organize transactions)
+- Date Tracking (Validation for transaction dates)
 
-| Endpoint | VIEWER | ANALYST | ADMIN | Description |
-|----------|--------|---------|-------|-------------|
-| `GET /dashboard/*` | ✓ | ✓ | ✓ | View dashboard (all can see) |
-| `GET /records` | ✗ | ✓ | ✓ | List financial records |
-| `POST /records` | ✗ | ✗ | ✓ | Create financial record |
-| `PATCH /records/:id` | ✗ | ✗ | ✓ | Edit financial record |
-| `DELETE /records/:id` | ✗ | ✗ | ✓ | Delete financial record |
-| `GET /users` | ✗ | ✗ | ✓ | List users |
-| `GET /users/:id` | ✗ | ✗ | ✓ | View user details |
-| `PATCH /users/:id/role` | ✗ | ✗ | ✓ | Change user role |
-| `PATCH /users/:id/status` | ✗ | ✗ | ✓ | Deactivate/activate user |
+### Dashboard Analytics
+- Financial Summary (Total income, expenses, balance)
+- Spending Trends (30-day patterns)
+- Category Breakdown (Expense distribution)
+- Recent Activity (Latest transactions)
+- Real-Time Updates (Live data refresh)
+
+### User Interface & UX
+- Responsive Design (Mobile, tablet, desktop)
+- Dark Mode (Light/dark theme toggle)
+- Fast Performance (Vite-optimized)
+- Intuitive Navigation (Hash-based routing)
+- Form Validation (Real-time error messages)
+- Toast Notifications (Feedback messages)
+
+### Testing & Quality
+- 58 E2E Tests (Comprehensive test suite)
+- 72% Code Coverage (All critical paths)
+- Cross-Browser Testing (Chromium, Firefox, WebKit)
+- Mobile Testing (Responsive validation)
+- Security Tests (CORS, RBAC, auth)
+- Production Validation (Live URL testing)
+
+### Deployment & DevOps
+- Frontend Hosting (Netlify with auto-deploy)
+- Backend Hosting (Render with auto-deploy)
+- Database (Supabase PostgreSQL)
+- CI/CD Pipeline (GitHub Actions)
+- HTTPS/SSL (Encrypted connections)
+- Health Checks (API monitoring)
+
+### API Features
+- RESTful API (20+ endpoints)
+- API Versioning (/api/v1/*)
+- Bearer Token Auth (JWT in header)
+- Input Validation (Type-safe)
+- OpenAPI Documentation
+- Error Handling (Consistent responses)
+
+### Database
+- PostgreSQL (ACID compliance)
+- Prisma ORM (Type-safe queries)
+- UUID Primary Keys
+- Performance Indexes
+- Soft Delete (Logical deletion)
+- Data Integrity (Constraints)
+
+### Developer Experience
+- TypeScript (Full type safety)
+- Modular Architecture (Domain-driven)
+- Easy Setup (npm run setup)
+- Documentation (README files)
+- Local Development (Hot reload)
+- Error Tracking (Detailed logging)
 
 ---
 
@@ -561,198 +333,118 @@ Full API documentation in `backend/docs/openapi.yaml`
 
 ---
 
-## 🎨 Frontend Features
-
-### Pages & Features
-
-**Login Page**
-- Sign In tab (email + password)
-- Sign Up tab (new account creation)
-- 3 Demo buttons (instant login)
-
-**Dashboard Page**
-- Financial summary (income, expenses, balance)
-- Recent activity list
-- Category breakdown (pie chart)
-- Spending trends (line chart)
-- Monthly insights
-
-**Records Page** (Analyst+)
-- Transactions table (paginated)
-- Filters by category, date, type
-- Search functionality
-- View/edit/delete (admin only)
-
-**Users Page** (Admin)
-- User list with roles and status
-- User search
-- Role management
-- Status management
-
-**Settings Page**
-- Dark mode toggle
-- Notification preferences
-- Profile information
-
----
-
-## ✅ Testing Suite
-
-### Test Coverage
-
-```
-PLAYWRIGHT E2E TESTS: 58 Total
-├── 11 Tests: Authentication & Sign In
-│   ✓ Demo button authentication
-│   ✓ Admin/Analyst/Viewer login
-│   ✓ Form validation
-│   ✓ Error handling
-│   ✓ Session persistence
-│   └── ✓ Role-based permissions
-│
-├── 7 Tests: Dashboard Features
-│   ✓ Dashboard loads
-│   ✓ Content visibility
-│   ✓ Chart rendering
-│   └── ✓ Data refresh
-│
-├── 10 Tests: Records Management
-│   ✓ Table rendering
-│   ✓ Pagination
-│   ✓ Filtering & sorting
-│   └── ✓ CRUD operations
-│
-├── 5 Tests: API Security
-│   ✓ Health check
-│   ✓ CORS headers
-│   ✓ Auth validation
-│   ✓ RBAC enforcement
-│   └── ✓ Data consistency
-│
-└── 25 Tests: Backend & Mobile
-    ✓ Write operations
-    ✓ User management
-    ✓ Mobile responsiveness
-
-RESULTS: 42 Passing | 11 Failed | 5 Skipped
-SUCCESS RATE: 72% (100% critical paths)
-```
-
-### Running Tests
-
-```bash
-cd tests
-npm install
-npx playwright install --with-deps
-npx playwright test --headed
-```
-
----
-
-## 🚀 Deployment
-
-### Production Deployment
-
-**Frontend**: https://finance-dashboard-pro.netlify.app
-- Hosted on Netlify (CDN globally)
-- Auto-deploys on Git push
-- Built with Vite
-
-**Backend**: https://finance-dashboard-api-hqjk.onrender.com
-- Hosted on Render (Node.js)
-- Auto-deploys on Git push
-- TypeScript compiled to JS
-
-**Database**: Supabase PostgreSQL
-- Managed database
-- Automatic backups
-- SSL encrypted
-
-```
-GitHub Repository
-    ↓
-Automatic Deploy Trigger
-    ├─▶ Netlify (Frontend)
-    └─▶ Render (Backend)
-         ↓
-    Supabase PostgreSQL
-```
-
----
-
-## 🏃 Quick Start (Production)
-
-**No setup needed!** Just visit:
-
-```bash
-# Frontend
-https://finance-dashboard-pro.netlify.app
-
-# Demo Accounts (All working)
-Email: viewer@finance-dashboard.local / Password: ViewerPassword123
-Email: analyst@finance-dashboard.local / Password: AnalystPassword123
-Email: admin@finance-dashboard.local / Password: AdminPassword123
-```
-
----
-
 ## 📁 Project Structure
 
 ```
 finance-dashboard-system/
-├── backend/          # Node.js/Express API
-│   ├── src/
-│   │   ├── modules/   # Auth, Users, Records, Dashboard
-│   │   ├── routes/    # API endpoints
-│   │   └── shared/    # RBAC, validation, errors
-│   ├── prisma/        # Database schema
-│   ├── tests/         # Unit & integration tests
-│   └── package.json
 │
-├── frontend/         # React SPA (Vite)
-│   ├── src/
-│   │   ├── pages/    # Login, Dashboard, Records, Users, Settings
-│   │   ├── components/ # Reusable components
-│   │   ├── hooks/    # Custom React hooks
-│   │   └── utils/    # API client, formatters
-│   └── package.json
+├── backend/ # Node.js/Express API Server
+│ ├── src/
+│ │ ├── app.ts # Express app configuration
+│ │ ├── server.ts # Server entry point
+│ │ │
+│ │ ├── config/
+│ │ │ ├── auth-config.ts # JWT configuration
+│ │ │ └── prisma.ts # Database client singleton
+│ │ │
+│ │ ├── modules/ # Feature modules (by domain)
+│ │ │ ├── auth/ # Authentication module
+│ │ │ │ ├── auth.types.ts
+│ │ │ │ ├── auth.service.ts
+│ │ │ │ ├── auth.routes.ts
+│ │ │ │ └── auth.mapper.ts
+│ │ │ │
+│ │ │ ├── users/ # User management module
+│ │ │ │ ├── users.types.ts
+│ │ │ │ ├── users.service.ts
+│ │ │ │ └── users.routes.ts
+│ │ │ │
+│ │ │ ├── records/ # Financial records module
+│ │ │ │ ├── records.types.ts
+│ │ │ │ ├── records.service.ts
+│ │ │ │ └── records.routes.ts
+│ │ │ │
+│ │ │ └── dashboard/ # Dashboard analytics module
+│ │ │ ├── dashboard.types.ts
+│ │ │ ├── dashboard.service.ts
+│ │ │ └── dashboard.routes.ts
+│ │ │
+│ │ ├── routes/ # Route aggregation
+│ │ │ ├── api.ts # /api routes
+│ │ │ ├── v1.ts # /api/v1 routes
+│ │ │ └── health.ts # /health endpoint
+│ │ │
+│ │ └── shared/ # Shared utilities & middleware
+│ │ ├── access-control/ # RBAC implementation
+│ │ ├── domain/ # Domain models
+│ │ ├── errors/ # Error classes & handler
+│ │ ├── middleware/ # Express middleware
+│ │ ├── utils/ # Utility functions
+│ │ └── validation/ # Input validators
+│ │
+│ ├── prisma/
+│ │ ├── schema.prisma # Database schema definition
+│ │ └── seed.ts # Database seeding script
+│ │
+│ ├── tests/ # Unit & integration tests
+│ │ ├── integration/ # Integration tests
+│ │ └── unit/ # Unit tests
+│ │
+│ ├── package.json
+│ ├── tsconfig.json
+│ ├── jest.config.js
+│ └── README.md
 │
-├── tests/           # Playwright E2E tests
-│   ├── e2e/         # Test specs (58 tests)
-│   ├── support/     # Test utilities
-│   └── package.json
+├── frontend/ # React SPA (Vanilla JS with Vite)
+│ ├── src/
+│ │ ├── api.js # API client & http utilities
+│ │ ├── app.js # Main application logic
+│ │ ├── auth.js # Authentication & token management
+│ │ │
+│ │ ├── layout.js # Layout & navigation component
+│ │ │
+│ │ ├── page-login.js # Login page (Sign In / Sign Up)
+│ │ ├── page-dashboard.js # Dashboard page (Analytics)
+│ │ ├── page-records.js # Records page (Transactions)
+│ │ ├── page-users.js # Users page (Admin only)
+│ │ ├── page-settings.js # Settings page (Preferences)
+│ │ ├── page-unauthorized.js # 403 error page
+│ │ │
+│ │ ├── toast.js # Toast notifications utility
+│ │ │
+│ │ └── index.css # Global styles (Tailwind CSS)
+│ │
+│ ├── index.html # HTML template
+│ ├── vite.config.js # Vite configuration
+│ ├── tailwind.config.js # Tailwind CSS config
+│ ├── package.json
+│ └── README.md
 │
-└── README.md        # This file
+├── tests/ # Playwright E2E Tests
+│ ├── e2e/ # End-to-end test specs
+│ │ ├── frontend-signin.spec.ts # 11 authentication tests
+│ │ ├── frontend-dashboard-detailed.spec.ts
+│ │ ├── frontend-records-detailed.spec.ts
+│ │ ├── frontend-ux-and-mobile.spec.ts
+│ │ ├── api-security-and-integrity.spec.ts
+│ │ ├── production-writes.optional.spec.ts
+│ │ ├── backend-user-management.optional.spec.ts
+│ │ └── backend-record-lifecycle.optional.spec.ts
+│ │
+│ ├── support/ # Test utilities
+│ │ ├── app.ts # Page object & helpers
+│ │ ├── api.ts # API testing utilities
+│ │ └── env.ts # Environment config
+│ │
+│ ├── playwright.config.ts # Playwright configuration
+│ ├── package.json
+│ └── README.md
+│
+└── README.md # Project documentation
 ```
 
 ---
 
-## ✨ Project Status
-
-### Completion Summary
-
-| Aspect | Status | Notes |
-|--------|--------|-------|
-| Backend API | ✅ Complete | 20+ endpoints, all CRUD operations |
-| Frontend SPA | ✅ Complete | 6 pages, responsive, dark mode |
-| Database | ✅ Complete | PostgreSQL with soft-delete |
-| Authentication | ✅ Complete | Hybrid demo + signup + login |
-| RBAC | ✅ Complete | 3 roles enforced everywhere |
-| E2E Tests | ✅ Complete | 58 tests, 72% coverage |
-| Deployment | ✅ Complete | Live on Netlify + Render |
-
-### What's Being Tested in Production
-
-- ✅ User authentication (all 3 roles)
-- ✅ Financial record management (create, read, update, delete)
-- ✅ Dashboard analytics (summary, trending, insights, breakdown)
-- ✅ Role-based access control (permission enforcement)
-- ✅ Mobile responsiveness
-- ✅ API security (CORS, sanitization, RBAC)
-- ✅ Session persistence
-- ✅ Data soft-delete pattern
-
----
 
 **Built with **❤️** using TypeScript, React, Express, PostgreSQL, and Playwright**
 
