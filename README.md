@@ -2,15 +2,15 @@
 
 > A financial management platform to track income, expenses, and analyze spending patterns with role-based access control, supported by secure and structured APIs for managing financial data and insights.
 
-**Key Highlights:**
-- 🔐 **Hybrid Authentication** — Demo access, user signup, and secure JWT-based login with rate limiting
-- 👥 **Role-Based Access Control** — 3-tier permission system (VIEWER, ANALYST, ADMIN) enforced across all operations
-- 📊 **Advanced Analytics** — Dashboard with financial summaries, trends, category breakdown, and AI insights
-- ✅ **Comprehensive Testing** — 58 Playwright E2E tests with 72% coverage, all critical paths verified
-- 🚀 **Production Deployed** — Live on Netlify (frontend), Render (backend), Supabase (database)
-- 🛡️ **Enterprise Security** — Soft-delete pattern, input validation, CORS protection, RBAC enforcement
+ <p align="center">
+  <a href="https://finance-dashboard-pro.netlify.app"><img src="https://img.shields.io/badge/Live%20Demo-00C7FD?style=for-the-badge&logo=netlify&logoColor=white" /></a>
+  <a href="https://finance-dashboard-api-hqjk.onrender.com/health"><img src="https://img.shields.io/badge/API%20Server-46E3B7?style=for-the-badge&logo=render&logoColor=white" /></a>
+  <a href="https://github.com/ByteForge24/Finance-Dashboard-System"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" /></a>
+</p>
 
-**Tech Stack:** TypeScript • React • Express • PostgreSQL • Prisma • JWT • Tailwind CSS • Playwright
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=react,ts,tailwind,nodejs,express,postgres,docker&theme=dark" />
+</p>
 
 ---
 
