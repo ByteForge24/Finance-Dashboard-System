@@ -1,6 +1,6 @@
 # Finance Dashboard System
 
-A backend-focused financial management application providing RESTful APIs for user authentication, financial record management, and dashboard analytics with role-based access control.
+> A backend-focused financial management application providing RESTful APIs for user authentication, financial record management, and dashboard analytics with role-based access control.
 
 ## Project Overview
 
